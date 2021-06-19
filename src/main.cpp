@@ -5,12 +5,16 @@
 
 #include "api.h"
 
-WINDOW *mainWin;
-WINDOW *promptWin;
+WINDOW *mainWinBorder;
+WINDOW *mainWinField;
+WINDOW *promptWinBorder;
+WINDOW *promptWinField;
 
 void drawPromptWin();
 void drawMainWin();
 void drawMainWinList(std::list<std::string> resources, int selected);
+void typeInPrompt(std::string userInput);
+void deleteInPrompt(std::string &userInput);
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
@@ -66,7 +70,7 @@ int main(int argc, char *argv[]) {
     // Terminate on ENTER
     if (keyPress == 10) break;
 
-    keyPress = wgetch(promptWin);
+    keyPress = wgetch(promptWinField);
     switch (keyPress) {
       case KEY_UP:
         if (selected > 0) {
@@ -82,10 +86,7 @@ int main(int argc, char *argv[]) {
         break;
       case KEY_BACKSPACE:
         if (userInput.length() > 0) {
-          userInput.pop_back();
-          mvwprintw(promptWin, 1, userInput.length() + 1, " ");
-          mvwprintw(promptWin, 1, 1, userInput.c_str());
-          wrefresh(promptWin);
+          deleteInPrompt(userInput);
         }
         break;
       case KEY_RESIZE:
@@ -93,14 +94,13 @@ int main(int argc, char *argv[]) {
         drawMainWin();
         drawMainWinList(resources, selected);
         drawPromptWin();
-        mvwprintw(promptWin, 1, 1, userInput.c_str());
+        typeInPrompt(userInput.c_str());
       default:
         // if printable, append to the user input
         if (isprint(keyPress)) {
           // TODO it will "overflow" the box when too many chars, fix that
           userInput.push_back(keyPress);
-          mvwprintw(promptWin, 1, 1, userInput.c_str());
-          wrefresh(promptWin);
+          typeInPrompt(userInput.c_str());
         }
     }
   }
@@ -117,43 +117,65 @@ int main(int argc, char *argv[]) {
 void drawMainWinList(std::list<std::string> resources, int selected) {
   int i = 0;
   for (auto &resource : resources) {
-    if (i == selected) wattron(mainWin, A_REVERSE);
+    if (i == selected) wattron(mainWinBorder, A_REVERSE);
 
-    mvwprintw(mainWin, i + 1, 1, resource.c_str());
-    wattroff(mainWin, A_REVERSE);
+    mvwprintw(mainWinBorder, i + 1, 1, resource.c_str());
+    wattroff(mainWinBorder, A_REVERSE);
     i++;
   }
-  wrefresh(mainWin);
+  wrefresh(mainWinBorder);
+}
+
+void deleteInPrompt(std::string &userInput) {
+  // TODO: all logic of inputting data should be inside its own class
+  // and not be handled by different parts and functions of a big file
+  userInput.pop_back();
+  mvwprintw(promptWinField, 0, userInput.length(), " ");
+  wrefresh(promptWinField);
+}
+
+void typeInPrompt(std::string userInput) {
+  mvwprintw(promptWinField, 0, 0, userInput.c_str());
+  wrefresh(promptWinField);
 }
 
 void drawPromptWin() {
-  int yMainMax, xMainMax, yMainBeg, xMainBeg;
-  getmaxyx(mainWin, yMainMax, xMainMax);
-  getbegyx(mainWin, yMainBeg, xMainBeg);
-
-  int promptHeight, promptWidth, promptStartY, promptStartX;
+  int yMax, xMax, promptHeight, promptWidth, promptStartY, promptStartX;
+  getmaxyx(stdscr, yMax, xMax);
   promptHeight = 3;
-  promptWidth = xMainMax;
-  promptStartY = yMainMax - promptHeight;
-  promptStartX = xMainBeg;
-  promptWin = newwin(promptHeight, promptWidth, promptStartY, promptStartX);
+  promptWidth = xMax;
+  promptStartY = yMax - promptHeight;
+  promptStartX = 0;
 
-  keypad(promptWin, true);
-  box(promptWin, 0, 0);
-  mvwprintw(promptWin, 0, 1, "Prompt");
-  wrefresh(promptWin);
+  // Surrounding box of input field
+  promptWinBorder =
+      newwin(promptHeight, promptWidth, promptStartY, promptStartX);
+  box(promptWinBorder, 0, 0);
+  mvwprintw(promptWinBorder, 0, 1, "Prompt");
+  wrefresh(promptWinBorder);
+
+  // Input field
+  // TODO: we still write data in, even if the width is full, meaning we do not see what we write (its off screen)
+  promptWinField =
+      newwin(1, promptWidth - 2, promptStartY + 1, promptStartX + 1);
+  keypad(promptWinField, true);
+  scrollok(promptWinField, true);
+  wrefresh(promptWinField);
 }
 
+// TODO: add ui class for this whole tui/ui part
 void drawMainWin() {
-  int yMax, xMax;
+  int yMax, xMax, mainHeight, mainWidth, mainStartY, mainStartX;
   getmaxyx(stdscr, yMax, xMax);
-  int mainHeight, mainWidth, mainStartY, mainStartX;
   mainHeight = yMax;
   mainWidth = xMax;
   mainStartX = mainStartY = 0;
-  mainWin = newwin(mainHeight, mainWidth, mainStartY, mainStartX);
 
-  box(mainWin, 0, 0);
-  mvwprintw(mainWin, 0, 1, "Main");
-  wrefresh(mainWin);
+  // Surrounding box of input field
+  mainWinBorder = newwin(mainHeight - 3, mainWidth, mainStartY, mainStartX);
+  box(mainWinBorder, 0, 0);
+  mvwprintw(mainWinBorder, 0, 1, "Main");
+  wrefresh(mainWinBorder);
+
+  // Input field
 }
