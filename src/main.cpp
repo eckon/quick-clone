@@ -117,13 +117,13 @@ int main(int argc, char *argv[]) {
 void drawMainWinList(std::list<std::string> resources, int selected) {
   int i = 0;
   for (auto &resource : resources) {
-    if (i == selected) wattron(mainWinBorder, A_REVERSE);
+    if (i == selected) wattron(mainWinField, A_REVERSE);
 
-    mvwprintw(mainWinBorder, i + 1, 1, resource.c_str());
-    wattroff(mainWinBorder, A_REVERSE);
+    mvwprintw(mainWinField, i, 0, resource.c_str());
+    wattroff(mainWinField, A_REVERSE);
     i++;
   }
-  wrefresh(mainWinBorder);
+  wrefresh(mainWinField);
 }
 
 void deleteInPrompt(std::string &userInput) {
@@ -155,11 +155,12 @@ void drawPromptWin() {
   wrefresh(promptWinBorder);
 
   // Input field
-  // TODO: we still write data in, even if the width is full, meaning we do not see what we write (its off screen)
+  // TODO: we still write data in, even if the width is full, meaning we do not
+  // see what we write (its off screen)
+  // MEANING: Add scrolling of the view or somethng similar
   promptWinField =
       newwin(1, promptWidth - 2, promptStartY + 1, promptStartX + 1);
   keypad(promptWinField, true);
-  scrollok(promptWinField, true);
   wrefresh(promptWinField);
 }
 
@@ -178,4 +179,7 @@ void drawMainWin() {
   wrefresh(mainWinBorder);
 
   // Input field
+  mainWinField =
+      newwin(mainHeight - 5, mainWidth - 2, mainStartY + 1, mainStartX + 1);
+  wrefresh(mainWinField);
 }
