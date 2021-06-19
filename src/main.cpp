@@ -10,83 +10,89 @@ void drawMainWin();
 void drawMainWinList(int dataSize, int selected, string data[]);
 
 int main(int argc, char **argv) {
-  // Start
-  initscr();
-  noecho();
-  cbreak();
+  // TODO:
   // use different mode so that it is nonblocking (halfdelay/timeout)
   // might be needed later on when getting http responses
-  curs_set(0);
+  initscr();    // init ncurses
+  noecho();     // do not echo the button press
+  cbreak();     // set mode
+  curs_set(0);  // hide cursor
 
-  // Setup Main/Prompt Windows
+  // Initial draw of windows
   drawMainWin();
   drawPromptWin();
-  keypad(promptWin, true);
 
-  // Data to select
+  // Add data for the list (in MainWin) and draw it
   string data[] = {"foo", "bar", "baz"};
   int dataSize = sizeof(data) / sizeof(*data);
   int selected = 0;
+  drawMainWinList(dataSize, selected, data);
 
   // Prompt Data
   string userInput;
+  int keyPress;
 
   while (true) {
-    // drawMainWin();
-    // drawPromptWin();
-    drawMainWinList(dataSize, selected, data);
-
-    // Print user input to prompt
-    mvwprintw(promptWin, 1, 1, userInput.c_str());
-
-    // User input (in Prompt Window)
-    int keyPress = wgetch(promptWin);
-    switch (keyPress) {
-    case KEY_UP:
-      if (selected > 0)
-        selected--;
-      break;
-    case KEY_DOWN:
-      if (selected < dataSize - 1)
-        selected++;
-      break;
-    case KEY_BACKSPACE:
-      if (userInput.length() > 0)
-        userInput.pop_back();
-      break;
-    default:
-      // if printable, append to the user input
-      if (isprint(keyPress))
-        userInput.push_back(keyPress);
-      // mvaddch(10, 10, (char)keyPress);
-      // refresh();
-    }
-
-    // On ENTER Press see if i can use KEY_ENTER or something
+    // Terminate on ENTER
     if (keyPress == 10)
       break;
 
-    wrefresh(promptWin);
+    keyPress = wgetch(promptWin);
+    switch (keyPress) {
+    case KEY_UP:
+      if (selected > 0) {
+        selected--;
+        drawMainWinList(dataSize, selected, data);
+      }
+      break;
+    case KEY_DOWN:
+      if (selected < dataSize - 1) {
+        selected++;
+        drawMainWinList(dataSize, selected, data);
+      }
+      break;
+    case KEY_BACKSPACE:
+      if (userInput.length() > 0) {
+        userInput.pop_back();
+        mvwprintw(promptWin, 1, userInput.length() + 1, " ");
+        mvwprintw(promptWin, 1, 1, userInput.c_str());
+        wrefresh(promptWin);
+      }
+      break;
+    case KEY_RESIZE:
+      // Redraw whole app when terminal gets resized
+      drawMainWin();
+      drawMainWinList(dataSize, selected, data);
+      drawPromptWin();
+      mvwprintw(promptWin, 1, 1, userInput.c_str());
+    default:
+      // if printable, append to the user input
+      if (isprint(keyPress)) {
+        userInput.push_back(keyPress);
+        mvwprintw(promptWin, 1, 1, userInput.c_str());
+        wrefresh(promptWin);
+      }
+    }
   }
 
-  // End
+  // End ncurses
   endwin();
 
-  // this would call the end function (git clone)
+  // Return selected value for later usage
   printf("Selected: %s", data[selected].c_str());
 
   return 0;
 }
 
 void drawMainWinList(int dataSize, int selected, string data[]) {
-    for (int i = 0; i < dataSize; i++) {
-      if (i == selected)
-        wattron(mainWin, A_REVERSE);
+  for (int i = 0; i < dataSize; i++) {
+    if (i == selected)
+      wattron(mainWin, A_REVERSE);
 
-      mvwprintw(mainWin, i + 1, 1, data[i].c_str());
-      wattroff(mainWin, A_REVERSE);
-    }
-    wrefresh(mainWin);
+    mvwprintw(mainWin, i + 1, 1, data[i].c_str());
+    wattroff(mainWin, A_REVERSE);
+  }
+  wrefresh(mainWin);
 }
 
 void drawPromptWin() {
@@ -101,6 +107,7 @@ void drawPromptWin() {
   promptStartX = xMainBeg;
   promptWin = newwin(promptHeight, promptWidth, promptStartY, promptStartX);
 
+  keypad(promptWin, true);
   box(promptWin, 0, 0);
   mvwprintw(promptWin, 0, 1, "Prompt");
   wrefresh(promptWin);
