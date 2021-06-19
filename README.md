@@ -6,6 +6,7 @@ Small cli tool to search and clone git repositories in one step.
 
 - ncurses
 - libcurl
+- nlohmann/json
 
 ## Commands
 ```bash
@@ -13,5 +14,6 @@ Small cli tool to search and clone git repositories in one step.
 $ make && ./bin/main
 
 # format with clang-format (google style)
-$ clang-format -i --style=Google  src/main.cpp
+# done by makefile
+$ clang-format -i --style=Google src/*
 ```
