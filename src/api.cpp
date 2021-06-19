@@ -1,18 +1,23 @@
 #include <curl/curl.h>
 
+#include <cstdio>
 #include <iostream>
+#include <list>
 #include <nlohmann/json.hpp>
+#include <string>
 
-static size_t WriteCallback(void *contents, size_t size, size_t nmemb,
+static size_t writeCallback(void *contents, size_t size, size_t nmemb,
                             void *userp) {
   ((std::string *)userp)->append((char *)contents, size * nmemb);
   return size * nmemb;
 }
 
-int main(int argc, char **argv) {
+std::list<std::string> getRepoResources() {
   CURL *curl;
   CURLcode res;
   std::string readBuffer;
+  std::list<std::string> routes;
+  long httpCode = 0;
 
   std::string searchValue = "bighost";
   std::string searchParameter = "search=" + searchValue;
@@ -24,6 +29,7 @@ int main(int argc, char **argv) {
                     orderParameter;
   std::string privateToken = "PRIVATE-TOKEN: SECRET";
 
+
   struct curl_slist *headers = NULL;
   headers = curl_slist_append(headers, privateToken.c_str());
 
@@ -31,23 +37,26 @@ int main(int argc, char **argv) {
   if (curl) {
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
     res = curl_easy_perform(curl);
+
     if (res != CURLE_OK)
       fprintf(stderr, "curl_easy_perform() failed: %s\n",
               curl_easy_strerror(res));
+
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+    if (httpCode != 200)
+      fprintf(stderr, "HTTP response was not 200 - got: %ld\n", httpCode);
+
     curl_easy_cleanup(curl);
 
     std::string data = readBuffer.data();
-
-    // std::cout << data << std::endl;
     auto json = nlohmann::json::parse(data);
-    // std::cout << json.dump(4) << std::endl;
     for (auto &el : json.items()) {
-      std::cout << el.value()["ssh_url_to_repo"] << std::endl;
+      routes.push_back(el.value()["ssh_url_to_repo"]);
     }
   }
 
-  return 0;
+  return routes;
 }

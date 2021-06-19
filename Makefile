@@ -1,10 +1,7 @@
-all: format main api
+all: format main
 
 format: src/*
-	clang-format -i --style=Google  src/*
+	clang-format -i --style=Google src/*
 
-main: src/main.cpp
-	g++ src/main.cpp -lncurses -o bin/main
-
-api: src/api.cpp
-	g++ src/api.cpp -lcurl -o bin/api
+main:
+	g++ src/* -lncurses -lcurl -o bin/main

@@ -1,6 +1,9 @@
 #include <ncurses.h>
 
+#include <iostream>
 #include <string>
+
+#include "api.h"
 
 WINDOW *mainWin;
 WINDOW *promptWin;
@@ -23,6 +26,9 @@ int main(int argc, char **argv) {
   drawPromptWin();
 
   // Add data for the list (in MainWin) and draw it
+  auto resources = getRepoResources();
+  for (auto const &route : resources) std::cout << route << std::endl;
+
   std::string data[] = {"foo", "bar", "baz"};
   int dataSize = sizeof(data) / sizeof(*data);
   int selected = 0;
