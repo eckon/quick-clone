@@ -1,4 +1,5 @@
 #include <ncurses.h>
+
 #include <string>
 using namespace std;
 
@@ -34,44 +35,43 @@ int main(int argc, char **argv) {
 
   while (true) {
     // Terminate on ENTER
-    if (keyPress == 10)
-      break;
+    if (keyPress == 10) break;
 
     keyPress = wgetch(promptWin);
     switch (keyPress) {
-    case KEY_UP:
-      if (selected > 0) {
-        selected--;
+      case KEY_UP:
+        if (selected > 0) {
+          selected--;
+          drawMainWinList(dataSize, selected, data);
+        }
+        break;
+      case KEY_DOWN:
+        if (selected < dataSize - 1) {
+          selected++;
+          drawMainWinList(dataSize, selected, data);
+        }
+        break;
+      case KEY_BACKSPACE:
+        if (userInput.length() > 0) {
+          userInput.pop_back();
+          mvwprintw(promptWin, 1, userInput.length() + 1, " ");
+          mvwprintw(promptWin, 1, 1, userInput.c_str());
+          wrefresh(promptWin);
+        }
+        break;
+      case KEY_RESIZE:
+        // Redraw whole app when terminal gets resized
+        drawMainWin();
         drawMainWinList(dataSize, selected, data);
-      }
-      break;
-    case KEY_DOWN:
-      if (selected < dataSize - 1) {
-        selected++;
-        drawMainWinList(dataSize, selected, data);
-      }
-      break;
-    case KEY_BACKSPACE:
-      if (userInput.length() > 0) {
-        userInput.pop_back();
-        mvwprintw(promptWin, 1, userInput.length() + 1, " ");
+        drawPromptWin();
         mvwprintw(promptWin, 1, 1, userInput.c_str());
-        wrefresh(promptWin);
-      }
-      break;
-    case KEY_RESIZE:
-      // Redraw whole app when terminal gets resized
-      drawMainWin();
-      drawMainWinList(dataSize, selected, data);
-      drawPromptWin();
-      mvwprintw(promptWin, 1, 1, userInput.c_str());
-    default:
-      // if printable, append to the user input
-      if (isprint(keyPress)) {
-        userInput.push_back(keyPress);
-        mvwprintw(promptWin, 1, 1, userInput.c_str());
-        wrefresh(promptWin);
-      }
+      default:
+        // if printable, append to the user input
+        if (isprint(keyPress)) {
+          userInput.push_back(keyPress);
+          mvwprintw(promptWin, 1, 1, userInput.c_str());
+          wrefresh(promptWin);
+        }
     }
   }
 
@@ -86,8 +86,7 @@ int main(int argc, char **argv) {
 
 void drawMainWinList(int dataSize, int selected, string data[]) {
   for (int i = 0; i < dataSize; i++) {
-    if (i == selected)
-      wattron(mainWin, A_REVERSE);
+    if (i == selected) wattron(mainWin, A_REVERSE);
 
     mvwprintw(mainWin, i + 1, 1, data[i].c_str());
     wattroff(mainWin, A_REVERSE);
