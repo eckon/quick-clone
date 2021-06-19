@@ -3,6 +3,6 @@
 
 #include <list>
 #include <string>
-std::list<std::string> getRepoResources();
+std::list<std::string> getRepoResources(std::string searchValue);
 
 #endif

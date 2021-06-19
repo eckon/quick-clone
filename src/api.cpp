@@ -12,22 +12,21 @@ static size_t writeCallback(void *contents, size_t size, size_t nmemb,
   return size * nmemb;
 }
 
-std::list<std::string> getRepoResources() {
+std::list<std::string> getRepoResources(std::string searchValue) {
   CURL *curl;
   CURLcode res;
   std::string readBuffer;
   std::list<std::string> routes;
   long httpCode = 0;
 
-  std::string searchValue = "bighost";
   std::string searchParameter = "search=" + searchValue;
-  std::string resultAmount = "2";
+  std::string resultAmount = "100";
   std::string perPageParameter = "per_page=" + resultAmount;
   std::string orderParameter = "order_by=last_activity_at";
-  std::string url = "https://registry.ascora.eu/api/v4/projects?" +
-                    searchParameter + "&" + perPageParameter + "&" +
-                    orderParameter;
   std::string privateToken = "PRIVATE-TOKEN: SECRET";
+  std::string baseUrl = "https://registry.ascora.eu/api/v4/projects";
+  std::string url = baseUrl + "?" + searchParameter + "&" + perPageParameter +
+                    "&" + orderParameter;
 
 
   struct curl_slist *headers = NULL;

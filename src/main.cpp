@@ -12,7 +12,17 @@ void drawPromptWin();
 void drawMainWin();
 void drawMainWinList(std::list<std::string> resources, int selected);
 
-int main(int argc, char **argv) {
+int main(int argc, char *argv[]) {
+  if (argc < 2) {
+    printf("Pass at least one parameter to this command");
+    return 1;
+  }
+
+  std::string searchValue = "";
+  for (int i = 1; i < argc; i++) {
+    searchValue = searchValue + argv[i];
+  }
+
   // TODO:
   // use different mode so that it is nonblocking (halfdelay/timeout)
   // might be needed later on when getting http responses
@@ -26,8 +36,11 @@ int main(int argc, char **argv) {
   drawPromptWin();
 
   // Add data for the list (in MainWin) and draw it
-  // auto resources = getRepoResources();
-  // for (auto const &route : resources) std::cout << route << std::endl;
+  // TODO: get data from user inside of application not on startup
+  // TODO: put these inside of their own struct/class for better readabillity
+  // and way of adding more info (like descritpion/maintainer etc)
+  // also this should make filtering and highlighting easier
+  // auto resources = getRepoResources(searchValue);
   std::list<std::string> resources = {
       "git@gitlab.eu:foo/singularity-elasticsearch-curator.git",
       "git@gitlab.eu:webteam/singularity-v2/singularity2-frontend.git",
@@ -42,6 +55,7 @@ int main(int argc, char **argv) {
   };
 
   int selected = 0;
+  // TODO: it will probably overdraw the pompt when we have too many entries
   drawMainWinList(resources, selected);
 
   // Prompt Data
@@ -83,6 +97,7 @@ int main(int argc, char **argv) {
       default:
         // if printable, append to the user input
         if (isprint(keyPress)) {
+          // TODO it will "overflow" the box when too many chars, fix that
           userInput.push_back(keyPress);
           mvwprintw(promptWin, 1, 1, userInput.c_str());
           wrefresh(promptWin);
