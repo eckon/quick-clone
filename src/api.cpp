@@ -6,17 +6,20 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
+#include "repository.h"
+
 static size_t writeCallback(void *contents, size_t size, size_t nmemb,
                             void *userp) {
   ((std::string *)userp)->append((char *)contents, size * nmemb);
   return size * nmemb;
 }
 
-std::list<std::string> getRepoResources(std::string searchValue) {
+// TODO: this or parts of it should be in the repo file
+std::list<Repository> getRepoResources(std::string searchValue) {
   CURL *curl;
   CURLcode res;
   std::string readBuffer;
-  std::list<std::string> routes;
+  std::list<Repository> repositories;
   long httpCode = 0;
 
   std::string searchParameter = "search=" + searchValue;
@@ -53,9 +56,9 @@ std::list<std::string> getRepoResources(std::string searchValue) {
     std::string data = readBuffer.data();
     auto json = nlohmann::json::parse(data);
     for (auto &el : json.items()) {
-      routes.push_back(el.value()["ssh_url_to_repo"]);
+      repositories.push_back(Repository{el.value()["ssh_url_to_repo"]});
     }
   }
 
-  return routes;
+  return repositories;
 }

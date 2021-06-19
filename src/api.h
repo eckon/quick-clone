@@ -2,7 +2,9 @@
 #define API_H
 
 #include <list>
-#include <string>
-std::list<std::string> getRepoResources(std::string searchValue);
+
+#include "repository.h"
+
+std::list<Repository> getRepoResources(std::string searchValue);
 
 #endif
