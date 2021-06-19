@@ -27,6 +27,11 @@ int main(int argc, char *argv[]) {
     searchValue = searchValue + argv[i];
   }
 
+  if (searchValue.size() < 3) {
+    printf("The passed parameter needs to be at least 3 symbols long");
+    return 1;
+  }
+
   // TODO:
   // use different mode so that it is nonblocking (halfdelay/timeout)
   // might be needed later on when getting http responses
@@ -44,19 +49,19 @@ int main(int argc, char *argv[]) {
   // TODO: put these inside of their own struct/class for better readabillity
   // and way of adding more info (like descritpion/maintainer etc)
   // also this should make filtering and highlighting easier
-  // auto resources = getRepoResources(searchValue);
-  std::list<std::string> resources = {
-      "git@gitlab.eu:foo/singularity-elasticsearch-curator.git",
-      "git@gitlab.eu:webteam/singularity-v2/singularity2-frontend.git",
-      "git@gitlab.eu:composer-registry/singularity-newsletter.git",
-      "git@gitlab.eu:bar/discontinued/cleverprint.git",
-      "git@gitlab.eu:webteam/singularity-simple-api.git",
-      "git@gitlab.eu:composer-registry/singularity-customer.git",
-      "git@gitlab.eu:composer-registry/singularity-customergroup.git",
-      "git@gitlab.eu:baz-registry/singularity-newsletterjob.git",
-      "git@gitlab.eu:composer-registry/singularity-nodeserver.git",
-      "git@gitlab.eu:composer-registry/singularity-order.git",
-  };
+  auto resources = getRepoResources(searchValue);
+  // std::list<std::string> resources = {
+  //     "git@gitlab.eu:foo/singularity-elasticsearch-curator.git",
+  //     "git@gitlab.eu:webteam/singularity-v2/singularity2-frontend.git",
+  //     "git@gitlab.eu:composer-registry/singularity-newsletter.git",
+  //     "git@gitlab.eu:bar/discontinued/cleverprint.git",
+  //     "git@gitlab.eu:webteam/singularity-simple-api.git",
+  //     "git@gitlab.eu:composer-registry/singularity-customer.git",
+  //     "git@gitlab.eu:composer-registry/singularity-customergroup.git",
+  //     "git@gitlab.eu:baz-registry/singularity-newsletterjob.git",
+  //     "git@gitlab.eu:composer-registry/singularity-nodeserver.git",
+  //     "git@gitlab.eu:composer-registry/singularity-order.git",
+  // };
 
   int selected = 0;
   drawMainWinList(resources, selected);
@@ -113,8 +118,8 @@ int main(int argc, char *argv[]) {
 }
 
 void drawMainWinList(std::list<std::string> resources, int selected) {
-  // calculate how far the view needs to be shifted, to have selection always in focus
-  // this currently results in the cursor sticking to the bottom
+  // calculate how far the view needs to be shifted, to have selection always in
+  // focus this currently results in the cursor sticking to the bottom
   wclear(mainWinField);
   int maxHeight = getmaxy(mainWinField);
   int offset = (selected + 1) - maxHeight;
