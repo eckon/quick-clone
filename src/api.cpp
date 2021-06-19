@@ -56,7 +56,11 @@ std::list<Repository> getRepoResources(std::string searchValue) {
     std::string data = readBuffer.data();
     auto json = nlohmann::json::parse(data);
     for (auto &el : json.items()) {
-      repositories.push_back(Repository{el.value()["ssh_url_to_repo"]});
+      auto val = el.value();
+      Repository repo(val["ssh_url_to_repo"], val["name"],
+                      val["name_with_namespace"], val["http_url_to_repo"],
+                      val["web_url"]);
+      repositories.push_back(repo);
     }
   }
 

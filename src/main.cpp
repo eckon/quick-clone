@@ -113,7 +113,8 @@ int main(int argc, char *argv[]) {
   endwin();
 
   // Return selected value for later usage
-  printf("Selected: %s", std::next(resources.begin(), selected)->git.c_str());
+  printf("Selected: %s",
+         std::next(resources.begin(), selected)->ssh_url_to_repo.c_str());
 
   return 0;
 }
@@ -131,7 +132,7 @@ void drawMainWinList(std::list<Repository> resources, int selected) {
     if (i == selected) wattron(mainWinField, A_REVERSE);
 
     // TODO: instead of offset, position highlight in center on scroll
-    mvwprintw(mainWinField, i - offset, 0, resource.git.c_str());
+    mvwprintw(mainWinField, i - offset, 0, resource.ssh_url_to_repo.c_str());
     wattroff(mainWinField, A_REVERSE);
     i++;
   }
