@@ -10,7 +10,7 @@ WINDOW *promptWin;
 
 void drawPromptWin();
 void drawMainWin();
-void drawMainWinList(int dataSize, int selected, std::string data[]);
+void drawMainWinList(std::list<std::string> resources, int selected);
 
 int main(int argc, char **argv) {
   // TODO:
@@ -26,13 +26,23 @@ int main(int argc, char **argv) {
   drawPromptWin();
 
   // Add data for the list (in MainWin) and draw it
-  auto resources = getRepoResources();
-  for (auto const &route : resources) std::cout << route << std::endl;
+  // auto resources = getRepoResources();
+  // for (auto const &route : resources) std::cout << route << std::endl;
+  std::list<std::string> resources = {
+      "git@gitlab.eu:foo/singularity-elasticsearch-curator.git",
+      "git@gitlab.eu:webteam/singularity-v2/singularity2-frontend.git",
+      "git@gitlab.eu:composer-registry/singularity-newsletter.git",
+      "git@gitlab.eu:bar/discontinued/cleverprint.git",
+      "git@gitlab.eu:webteam/singularity-simple-api.git",
+      "git@gitlab.eu:composer-registry/singularity-customer.git",
+      "git@gitlab.eu:composer-registry/singularity-customergroup.git",
+      "git@gitlab.eu:baz-registry/singularity-newsletterjob.git",
+      "git@gitlab.eu:composer-registry/singularity-nodeserver.git",
+      "git@gitlab.eu:composer-registry/singularity-order.git",
+  };
 
-  std::string data[] = {"foo", "bar", "baz"};
-  int dataSize = sizeof(data) / sizeof(*data);
   int selected = 0;
-  drawMainWinList(dataSize, selected, data);
+  drawMainWinList(resources, selected);
 
   // Prompt Data
   std::string userInput;
@@ -47,13 +57,13 @@ int main(int argc, char **argv) {
       case KEY_UP:
         if (selected > 0) {
           selected--;
-          drawMainWinList(dataSize, selected, data);
+          drawMainWinList(resources, selected);
         }
         break;
       case KEY_DOWN:
-        if (selected < dataSize - 1) {
+        if (selected < resources.size() - 1) {
           selected++;
-          drawMainWinList(dataSize, selected, data);
+          drawMainWinList(resources, selected);
         }
         break;
       case KEY_BACKSPACE:
@@ -67,7 +77,7 @@ int main(int argc, char **argv) {
       case KEY_RESIZE:
         // Redraw whole app when terminal gets resized
         drawMainWin();
-        drawMainWinList(dataSize, selected, data);
+        drawMainWinList(resources, selected);
         drawPromptWin();
         mvwprintw(promptWin, 1, 1, userInput.c_str());
       default:
@@ -84,17 +94,19 @@ int main(int argc, char **argv) {
   endwin();
 
   // Return selected value for later usage
-  printf("Selected: %s", data[selected].c_str());
+  printf("Selected: %s", std::next(resources.begin(), selected)->c_str());
 
   return 0;
 }
 
-void drawMainWinList(int dataSize, int selected, std::string data[]) {
-  for (int i = 0; i < dataSize; i++) {
+void drawMainWinList(std::list<std::string> resources, int selected) {
+  int i = 0;
+  for (auto &resource : resources) {
     if (i == selected) wattron(mainWin, A_REVERSE);
 
-    mvwprintw(mainWin, i + 1, 1, data[i].c_str());
+    mvwprintw(mainWin, i + 1, 1, resource.c_str());
     wattroff(mainWin, A_REVERSE);
+    i++;
   }
   wrefresh(mainWin);
 }
