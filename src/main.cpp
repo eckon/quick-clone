@@ -59,7 +59,6 @@ int main(int argc, char *argv[]) {
   };
 
   int selected = 0;
-  // TODO: it will probably overdraw the pompt when we have too many entries
   drawMainWinList(resources, selected);
 
   // Prompt Data
@@ -98,7 +97,6 @@ int main(int argc, char *argv[]) {
       default:
         // if printable, append to the user input
         if (isprint(keyPress)) {
-          // TODO it will "overflow" the box when too many chars, fix that
           userInput.push_back(keyPress);
           typeInPrompt(userInput.c_str());
         }
@@ -115,11 +113,19 @@ int main(int argc, char *argv[]) {
 }
 
 void drawMainWinList(std::list<std::string> resources, int selected) {
+  // calculate how far the view needs to be shifted, to have selection always in focus
+  // this currently results in the cursor sticking to the bottom
+  wclear(mainWinField);
+  int maxHeight = getmaxy(mainWinField);
+  int offset = (selected + 1) - maxHeight;
+  if (offset < 0) offset = 0;
+
   int i = 0;
   for (auto &resource : resources) {
     if (i == selected) wattron(mainWinField, A_REVERSE);
 
-    mvwprintw(mainWinField, i, 0, resource.c_str());
+    // TODO: instead of offset, position highlight in center on scroll
+    mvwprintw(mainWinField, i - offset, 0, resource.c_str());
     wattroff(mainWinField, A_REVERSE);
     i++;
   }
@@ -154,10 +160,7 @@ void drawPromptWin() {
   mvwprintw(promptWinBorder, 0, 1, "Prompt");
   wrefresh(promptWinBorder);
 
-  // Input field
-  // TODO: we still write data in, even if the width is full, meaning we do not
-  // see what we write (its off screen)
-  // MEANING: Add scrolling of the view or somethng similar
+  // Info: Ignore scroll, because filter should be shorter than links anyways
   promptWinField =
       newwin(1, promptWidth - 2, promptStartY + 1, promptStartX + 1);
   keypad(promptWinField, true);
