@@ -1,14 +1,13 @@
 #include <ncurses.h>
 
 #include <string>
-using namespace std;
 
 WINDOW *mainWin;
 WINDOW *promptWin;
 
 void drawPromptWin();
 void drawMainWin();
-void drawMainWinList(int dataSize, int selected, string data[]);
+void drawMainWinList(int dataSize, int selected, std::string data[]);
 
 int main(int argc, char **argv) {
   // TODO:
@@ -24,13 +23,13 @@ int main(int argc, char **argv) {
   drawPromptWin();
 
   // Add data for the list (in MainWin) and draw it
-  string data[] = {"foo", "bar", "baz"};
+  std::string data[] = {"foo", "bar", "baz"};
   int dataSize = sizeof(data) / sizeof(*data);
   int selected = 0;
   drawMainWinList(dataSize, selected, data);
 
   // Prompt Data
-  string userInput;
+  std::string userInput;
   int keyPress;
 
   while (true) {
@@ -84,7 +83,7 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-void drawMainWinList(int dataSize, int selected, string data[]) {
+void drawMainWinList(int dataSize, int selected, std::string data[]) {
   for (int i = 0; i < dataSize; i++) {
     if (i == selected) wattron(mainWin, A_REVERSE);
 
