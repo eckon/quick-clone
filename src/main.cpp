@@ -6,6 +6,8 @@
 #include "api.h"
 #include "repository.h"
 
+#define DEV false
+
 WINDOW *mainWinBorder;
 WINDOW *mainWinField;
 WINDOW *promptWinBorder;
@@ -13,7 +15,9 @@ WINDOW *promptWinField;
 
 void drawPromptWin();
 void drawMainWin();
-void drawMainWinList(std::list<Repository> resources, int selected);
+void drawMainWinList(std::list<Repository> resources, int selected,
+                     std::string filter);
+bool fuzzyFindFilter(Repository resource, std::string filter);
 void typeInPrompt(std::string userInput);
 void deleteInPrompt(std::string &userInput);
 
@@ -41,31 +45,28 @@ int main(int argc, char *argv[]) {
   cbreak();     // set mode
   curs_set(0);  // hide cursor
 
+  // TODO: draw information about highlighted entry
+  // TODO: add way of changing parameter etc
   // Initial draw of windows
   drawMainWin();
   drawPromptWin();
 
   // Add data for the list (in MainWin) and draw it
   // TODO: get data from user inside of application not on startup
-  // TODO: put these inside of their own struct/class for better readabillity
-  // and way of adding more info (like descritpion/maintainer etc)
-  // also this should make filtering and highlighting easier
-  auto resources = getRepoResources(searchValue);
-  // std::list<std::string> resources = {
-  //     "git@gitlab.eu:foo/singularity-elasticsearch-curator.git",
-  //     "git@gitlab.eu:webteam/singularity-v2/singularity2-frontend.git",
-  //     "git@gitlab.eu:composer-registry/singularity-newsletter.git",
-  //     "git@gitlab.eu:bar/discontinued/cleverprint.git",
-  //     "git@gitlab.eu:webteam/singularity-simple-api.git",
-  //     "git@gitlab.eu:composer-registry/singularity-customer.git",
-  //     "git@gitlab.eu:composer-registry/singularity-customergroup.git",
-  //     "git@gitlab.eu:baz-registry/singularity-newsletterjob.git",
-  //     "git@gitlab.eu:composer-registry/singularity-nodeserver.git",
-  //     "git@gitlab.eu:composer-registry/singularity-order.git",
-  // };
+  // TODO: the own class should allow things like selected etc
+  // this should make filtering and highlighting easier
+  std::list<Repository> resources = {};
+  if (DEV) {
+    for (int i = 0; i < 100; i++) {
+      Repository repo("Example Number " + std::to_string(i), "", "", "", "");
+      resources.push_back(repo);
+    }
+  } else {
+    resources = getRepoResources(searchValue);
+  }
 
   int selected = 0;
-  drawMainWinList(resources, selected);
+  drawMainWinList(resources, selected, "");
 
   // Prompt Data
   std::string userInput;
@@ -80,24 +81,25 @@ int main(int argc, char *argv[]) {
       case KEY_UP:
         if (selected > 0) {
           selected--;
-          drawMainWinList(resources, selected);
+          drawMainWinList(resources, selected, userInput);
         }
         break;
       case KEY_DOWN:
         if (selected < resources.size() - 1) {
           selected++;
-          drawMainWinList(resources, selected);
+          drawMainWinList(resources, selected, userInput);
         }
         break;
       case KEY_BACKSPACE:
         if (userInput.length() > 0) {
           deleteInPrompt(userInput);
+          drawMainWinList(resources, selected, userInput);
         }
         break;
       case KEY_RESIZE:
         // Redraw whole app when terminal gets resized
         drawMainWin();
-        drawMainWinList(resources, selected);
+        drawMainWinList(resources, selected, userInput);
         drawPromptWin();
         typeInPrompt(userInput.c_str());
       default:
@@ -105,6 +107,7 @@ int main(int argc, char *argv[]) {
         if (isprint(keyPress)) {
           userInput.push_back(keyPress);
           typeInPrompt(userInput.c_str());
+          drawMainWinList(resources, selected, userInput);
         }
     }
   }
@@ -119,16 +122,44 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-void drawMainWinList(std::list<Repository> resources, int selected) {
-  // calculate how far the view needs to be shifted, to have selection always in
-  // focus this currently results in the cursor sticking to the bottom
+bool fuzzyFindFilter(Repository resource, std::string filter) {
+  // empty filter allowes everything
+  if (filter.size() == 0) return true;
+
+  // check if every char in filter exists in the resource (but in order)
+  // "abc" will be okay with "a1b2c" but not "bac"
+  int filterPosition = 0;
+  for (auto const &r : resource.ssh_url_to_repo) {
+    char filterChar = char(tolower(filter[filterPosition]));
+    if (filterChar == char(tolower(r))) {
+      filterPosition++;
+      if (filterPosition >= filter.size()) return true;
+    }
+  }
+
+  return false;
+}
+
+void drawMainWinList(std::list<Repository> resources, int selected,
+                     std::string filter) {
+  // calculate how far the view needs to be shifted, to have selection always
+  // in focus this currently results in the cursor sticking to the bottom
   wclear(mainWinField);
   int maxHeight = getmaxy(mainWinField);
   int offset = (selected + 1) - maxHeight;
   if (offset < 0) offset = 0;
 
+  // TODO: highlight the matched part
+  std::list<Repository> filteredResources = {};
+  for (auto const &resource : resources) {
+    bool valid = fuzzyFindFilter(resource, filter);
+    if (valid) {
+      filteredResources.push_back(resource);
+    }
+  }
+
   int i = 0;
-  for (auto &resource : resources) {
+  for (auto const &resource : filteredResources) {
     if (i == selected) wattron(mainWinField, A_REVERSE);
 
     // TODO: instead of offset, position highlight in center on scroll
