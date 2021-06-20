@@ -1,7 +1,7 @@
-all: format main
+all: format binary
 
 format: src/*
 	clang-format -i --style=Google src/*
 
-main:
-	g++ src/* -lncurses -lcurl -o bin/main
+binary:
+	g++ src/* -lncurses -lcurl -o bin/qc

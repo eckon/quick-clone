@@ -5,6 +5,18 @@ Small cli tool to search and clone git repositories in one step.
 Just add your gitlab config and be able to quickly clone any repository of that endpoint, without having to search through a web ui.
 
 
+# Usage
+
+Run the command `qc` with a search term of the repository (currently only the name of the git repository).
+
+## Example
+
+```sh
+# Results in a searchable buffer with all entries which include the word "quick"
+$ qc quick
+```
+
+
 # Setup
 
 Currently there is no precompiled binaries, so to install it, the [dependencies](#dependencies) are needed.
@@ -32,7 +44,7 @@ It uses multiple dependencies (jq, fzf, etc), but might be a better option for o
 
 
 ## Commands
-```bash
+```sh
 # compile and run
 $ make && ./bin/main
 ```
