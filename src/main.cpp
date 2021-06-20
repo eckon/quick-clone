@@ -119,10 +119,12 @@ int main(int argc, char *argv[]) {
   // End ncurses
   endwin();
 
-  // Return selected value for later usage
-  printf(
-      "Selected: %s",
-      std::next(filteredResources.begin(), selected)->ssh_url_to_repo.c_str());
+  // Final process -> get selected value and clone the repo in current directory
+  Repository selectedRepository =
+      *std::next(filteredResources.begin(), selected);
+
+  std::string command = "git clone " + selectedRepository.ssh_url_to_repo;
+  std::system(command.c_str());
 
   return 0;
 }
