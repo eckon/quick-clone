@@ -13,13 +13,19 @@ WINDOW *mainWinField;
 WINDOW *promptWinBorder;
 WINDOW *promptWinField;
 
+// TODO: these global ones should be put with the ui into its own class
+// TODO: make one construct out of these two resources, use one and toggle with
+// something like "hide" their state
+std::list<Repository> resources = {};
+std::list<Repository> filteredResources = {};
+std::string userInput = "";
+int selected = 0;
+
 void drawPromptWin();
 void drawMainWin();
-void drawMainWinList(std::list<Repository> resources, int selected,
-                     std::string filter);
-bool fuzzyFindFilter(Repository resource, std::string filter);
-void typeInPrompt(std::string userInput);
-void deleteInPrompt(std::string &userInput);
+void drawMainWinList();
+void typeInPrompt();
+void deleteInPrompt();
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
@@ -37,8 +43,8 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  // TODO:
-  // use different mode so that it is nonblocking (halfdelay/timeout)
+  // TODO: loading animation when waiting for curl
+  // TODO: use different mode so that it is nonblocking (halfdelay/timeout)
   // might be needed later on when getting http responses
   initscr();    // init ncurses
   noecho();     // do not echo the button press
@@ -53,23 +59,20 @@ int main(int argc, char *argv[]) {
 
   // Add data for the list (in MainWin) and draw it
   // TODO: get data from user inside of application not on startup
-  // TODO: the own class should allow things like selected etc
-  // this should make filtering and highlighting easier
-  std::list<Repository> resources = {};
   if (DEV) {
     for (int i = 0; i < 100; i++) {
       Repository repo("Example Number " + std::to_string(i), "", "", "", "");
       resources.push_back(repo);
+      filteredResources.push_back(repo);
     }
   } else {
     resources = getRepoResources(searchValue);
+    filteredResources = getRepoResources(searchValue);
   }
 
-  int selected = 0;
-  drawMainWinList(resources, selected, "");
+  drawMainWinList();
 
   // Prompt Data
-  std::string userInput;
   int keyPress;
 
   while (true) {
@@ -81,33 +84,34 @@ int main(int argc, char *argv[]) {
       case KEY_UP:
         if (selected > 0) {
           selected--;
-          drawMainWinList(resources, selected, userInput);
+          drawMainWinList();
         }
         break;
       case KEY_DOWN:
-        if (selected < resources.size() - 1) {
+        if (selected < filteredResources.size() - 1) {
           selected++;
-          drawMainWinList(resources, selected, userInput);
+          drawMainWinList();
         }
         break;
       case KEY_BACKSPACE:
         if (userInput.length() > 0) {
-          deleteInPrompt(userInput);
-          drawMainWinList(resources, selected, userInput);
+          deleteInPrompt();
+          drawMainWinList();
         }
         break;
       case KEY_RESIZE:
         // Redraw whole app when terminal gets resized
         drawMainWin();
-        drawMainWinList(resources, selected, userInput);
+        drawMainWinList();
         drawPromptWin();
-        typeInPrompt(userInput.c_str());
+        typeInPrompt();
       default:
         // if printable, append to the user input
         if (isprint(keyPress)) {
           userInput.push_back(keyPress);
-          typeInPrompt(userInput.c_str());
-          drawMainWinList(resources, selected, userInput);
+          typeInPrompt();
+
+          drawMainWinList();
         }
     }
   }
@@ -116,15 +120,21 @@ int main(int argc, char *argv[]) {
   endwin();
 
   // Return selected value for later usage
-  printf("Selected: %s",
-         std::next(resources.begin(), selected)->ssh_url_to_repo.c_str());
+  printf(
+      "Selected: %s",
+      std::next(filteredResources.begin(), selected)->ssh_url_to_repo.c_str());
 
   return 0;
 }
 
-bool fuzzyFindFilter(Repository resource, std::string filter) {
+bool fuzzyFindFilter(Repository resource, std::string filter, bool strict) {
   // empty filter allowes everything
   if (filter.size() == 0) return true;
+
+  // if strict, try finding an exact match
+  if (strict) {
+    return resource.ssh_url_to_repo.find(filter) != std::string::npos;
+  }
 
   // check if every char in filter exists in the resource (but in order)
   // "abc" will be okay with "a1b2c" but not "bac"
@@ -140,8 +150,8 @@ bool fuzzyFindFilter(Repository resource, std::string filter) {
   return false;
 }
 
-void drawMainWinList(std::list<Repository> resources, int selected,
-                     std::string filter) {
+void drawMainWinList() {
+  std::string filter = userInput;
   // calculate how far the view needs to be shifted, to have selection always
   // in focus this currently results in the cursor sticking to the bottom
   wclear(mainWinField);
@@ -150,12 +160,17 @@ void drawMainWinList(std::list<Repository> resources, int selected,
   if (offset < 0) offset = 0;
 
   // TODO: highlight the matched part
-  std::list<Repository> filteredResources = {};
+  filteredResources = {};
   for (auto const &resource : resources) {
-    bool valid = fuzzyFindFilter(resource, filter);
+    bool valid = fuzzyFindFilter(resource, filter, true);
     if (valid) {
       filteredResources.push_back(resource);
     }
+  }
+
+  // if selection is bigger than filtered list -> update selected
+  if (selected > filteredResources.size() - 1) {
+    selected = filteredResources.size() - 1;
   }
 
   int i = 0;
@@ -170,7 +185,7 @@ void drawMainWinList(std::list<Repository> resources, int selected,
   wrefresh(mainWinField);
 }
 
-void deleteInPrompt(std::string &userInput) {
+void deleteInPrompt() {
   // TODO: all logic of inputting data should be inside its own class
   // and not be handled by different parts and functions of a big file
   userInput.pop_back();
@@ -178,7 +193,7 @@ void deleteInPrompt(std::string &userInput) {
   wrefresh(promptWinField);
 }
 
-void typeInPrompt(std::string userInput) {
+void typeInPrompt() {
   mvwprintw(promptWinField, 0, 0, userInput.c_str());
   wrefresh(promptWinField);
 }
