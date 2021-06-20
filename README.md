@@ -46,5 +46,5 @@ It uses multiple dependencies (jq, fzf, etc), but might be a better option for o
 ## Commands
 ```sh
 # compile and run
-$ make && ./bin/main
+$ make && ./bin/qc
 ```
