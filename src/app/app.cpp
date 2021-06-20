@@ -2,6 +2,7 @@
 
 #include <ncurses.h>
 
+#include <list>
 #include <string>
 
 #include "../repository.h"
@@ -29,31 +30,32 @@ App::App() {
   curs_set(0);  // hide cursor
 }
 
-// bool fuzzyFindFilter(Repository resource, std::string filter, bool strict) {
-//   // empty filter allowes everything
-//   if (filter.size() == 0) return true;
+bool App::TMPfuzzyFindFilter(Repository resource, std::string filter,
+                             bool strict) {
+  // empty filter allowes everything
+  if (filter.size() == 0) return true;
 
-//   // if strict, try finding an exact match
-//   if (strict) {
-//     return resource.ssh_url_to_repo.find(filter) != std::string::npos;
-//   }
+  // if strict, try finding an exact match
+  if (strict) {
+    return resource.ssh_url_to_repo.find(filter) != std::string::npos;
+  }
 
-//   // check if every char in filter exists in the resource (but in order)
-//   // "abc" will be okay with "a1b2c" but not "bac"
-//   int filterPosition = 0;
-//   for (auto const &r : resource.ssh_url_to_repo) {
-//     char filterChar = char(tolower(filter[filterPosition]));
-//     if (filterChar == char(tolower(r))) {
-//       filterPosition++;
-//       if (filterPosition >= filter.size()) return true;
-//     }
-//   }
+  // check if every char in filter exists in the resource (but in order)
+  // "abc" will be okay with "a1b2c" but not "bac"
+  int filterPosition = 0;
+  for (auto const &r : resource.ssh_url_to_repo) {
+    char filterChar = char(tolower(filter[filterPosition]));
+    if (filterChar == char(tolower(r))) {
+      filterPosition++;
+      if (filterPosition >= filter.size()) return true;
+    }
+  }
 
-//   return false;
-// }
+  return false;
+}
 
-void App::drawMainWinList(std::string userInput, int selected,
-                          std::list<Repository> filteredResources,
+void App::drawMainWinList(std::string userInput, int &selected,
+                          std::list<Repository> &filteredResources,
                           std::list<Repository> resources) {
   std::string filter = userInput;
   // calculate how far the view needs to be shifted, to have selection always
@@ -66,18 +68,16 @@ void App::drawMainWinList(std::string userInput, int selected,
   // TODO: highlight the matched part
   filteredResources = {};
   for (auto const &resource : resources) {
-    // TODO: make fuzzyfind work with new class
-    // bool valid = fuzzyFindFilter(resource, filter, true);
-    // if (valid) {
-    filteredResources.push_back(resource);
-    // }
+    bool valid = this->TMPfuzzyFindFilter(resource, filter, true);
+    if (valid) {
+      filteredResources.push_back(resource);
+    }
   }
 
-  // TODO: this needs to be availabe in this new class
   // if selection is bigger than filtered list -> update selected
-  // if (selected > filteredResources.size() - 1) {
-  //   selected = filteredResources.size() - 1;
-  // }
+  if (selected > filteredResources.size() - 1) {
+    selected = filteredResources.size() - 1;
+  }
 
   int i = 0;
   for (auto const &resource : filteredResources) {
@@ -92,8 +92,6 @@ void App::drawMainWinList(std::string userInput, int selected,
 }
 
 void App::deleteInPrompt(std::string &userInput) {
-  // TODO: all logic of inputting data should be inside its own class
-  // and not be handled by different parts and functions of a big file
   userInput.pop_back();
   mvwprintw(promptWinField, 0, userInput.length(), " ");
   wrefresh(promptWinField);
@@ -126,7 +124,6 @@ void App::drawPromptWin() {
   wrefresh(promptWinField);
 }
 
-// TODO: add ui class for this whole tui/ui part
 void App::drawMainWin() {
   int yMax, xMax, mainHeight, mainWidth, mainStartY, mainStartX;
   getmaxyx(stdscr, yMax, xMax);

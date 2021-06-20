@@ -12,16 +12,22 @@
 class App {
  private:
   App();
+
   static App *instance;
+
   WINDOW *mainWinBorder;
   WINDOW *mainWinField;
   WINDOW *promptWinBorder;
   WINDOW *promptWinField;
 
+  bool TMPfuzzyFindFilter(Repository, std::string, bool);
+
  public:
   ~App();
+
   static App *getInstance();
-  void drawMainWinList(std::string, int, std::list<Repository>,
+
+  void drawMainWinList(std::string, int &, std::list<Repository> &,
                        std::list<Repository>);
   void deleteInPrompt(std::string &);
   void typeInPrompt(std::string);
