@@ -22,15 +22,17 @@ std::list<Repository> getRepoResources(std::string searchValue) {
   std::list<Repository> repositories;
   long httpCode = 0;
 
+  std::string gitlabAccessToken = std::getenv("GITLAB_ACCESS_TOKEN");
+  std::string gitlabProjectsUrl = std::getenv("GITLAB_PROJECTS_URL");
+
   std::string searchParameter = "search=" + searchValue;
   std::string resultAmount = "100";
   std::string perPageParameter = "per_page=" + resultAmount;
   std::string orderParameter = "order_by=last_activity_at";
-  std::string privateToken = "PRIVATE-TOKEN: SECRET";
-  std::string baseUrl = "https://registry.ascora.eu/api/v4/projects";
+  std::string privateToken = "PRIVATE-TOKEN: " + gitlabAccessToken;
+  std::string baseUrl = gitlabProjectsUrl;
   std::string url = baseUrl + "?" + searchParameter + "&" + perPageParameter +
                     "&" + orderParameter;
-
 
   struct curl_slist *headers = NULL;
   headers = curl_slist_append(headers, privateToken.c_str());
@@ -43,13 +45,13 @@ std::list<Repository> getRepoResources(std::string searchValue) {
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
     res = curl_easy_perform(curl);
 
+    // TODO: get more output for error
     if (res != CURLE_OK)
-      fprintf(stderr, "curl_easy_perform() failed: %s\n",
-              curl_easy_strerror(res));
+      throw "Could not get url resource, code: " + std::to_string(res);
 
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
     if (httpCode != 200)
-      fprintf(stderr, "HTTP response was not 200 - got: %ld\n", httpCode);
+      throw "HTTP response was not 200 - got: " + std::to_string(httpCode);
 
     curl_easy_cleanup(curl);
 

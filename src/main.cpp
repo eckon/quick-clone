@@ -66,8 +66,16 @@ int main(int argc, char *argv[]) {
       filteredResources.push_back(repo);
     }
   } else {
-    resources = getRepoResources(searchValue);
-    filteredResources = getRepoResources(searchValue);
+    try {
+      resources = getRepoResources(searchValue);
+      filteredResources = getRepoResources(searchValue);
+    } catch (std::string error) {
+      mvwprintw(mainWinField, 0, 0, error.c_str());
+      wrefresh(mainWinField);
+      wgetch(mainWinField);
+      endwin();
+      return 1;
+    }
   }
 
   drawMainWinList();
