@@ -7,7 +7,7 @@
 #include "app/app.h"
 #include "repository.h"
 
-#define DEV true
+#define DEV false
 
 // TODO: these global ones should be put with the ui into its own class
 // TODO: make one construct out of these two resources, use one and toggle with
@@ -99,6 +99,7 @@ int main(int argc, char *argv[]) {
         app->drawPromptWin();
         app->typeInPrompt(userInput);
       default:
+        // TODO: allow better typing, meaning show cursor, let user position it to remove spcific parts, maybe even short hands (C-W) to delete words etc etc. Things that I would consider basic in this part
         // if printable, append to the user input
         if (isprint(keyPress)) {
           userInput.push_back(keyPress);

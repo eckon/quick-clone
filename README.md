@@ -9,6 +9,7 @@ Just add your gitlab config and be able to quickly clone any repository of that 
 
 Run the command `qc` with a search term of the repository (currently only the name of the git repository).
 
+
 ## Example
 
 ```sh
@@ -45,6 +46,13 @@ It uses multiple dependencies (jq, fzf, etc), but might be a better option for o
 
 ## Commands
 ```sh
-# compile and run
-$ make && ./bin/qc
+# first time
+$ cmake .
+# afterwards run the make/cmake instead
+$ cmake --build .
+# or
+$ make
+
+# format repository
+$ clang-format -i --style=Google src/**/*.cpp src/**/*.h
 ```
