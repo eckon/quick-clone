@@ -2,9 +2,11 @@ cmake_minimum_required(VERSION 3.5)
 
 project(quick-clone)
 
-file(GLOB filepaths src/*.cpp)
-file(GLOB filepaths2 src/**/*.cpp)
-add_executable(qc ${filepaths} ${filepaths2})
+add_compile_options(-Wall -Wextra -Wpedantic)
+
+file(GLOB folderPath src/*.cpp)
+file(GLOB subFolderPath src/**/*.cpp)
+add_executable(qc ${folderPath} ${subFolderPath})
 
 target_link_libraries(qc ncurses curl)
 
