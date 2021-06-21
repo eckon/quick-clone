@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  App* app = App::getInstance();
+  App *app = App::getInstance();
 
   // TODO: draw information about highlighted entry
   // TODO: add way of changing parameter etc
@@ -77,19 +77,22 @@ int main(int argc, char *argv[]) {
       case KEY_UP:
         if (selected > 0) {
           selected--;
-          app->drawMainWinList(userInput, selected, filteredResources, resources);
+          app->drawMainWinList(userInput, selected, filteredResources,
+                               resources);
         }
         break;
       case KEY_DOWN:
-        if (selected < (int) filteredResources.size() - 1) {
+        if (selected < (int)filteredResources.size() - 1) {
           selected++;
-          app->drawMainWinList(userInput, selected, filteredResources, resources);
+          app->drawMainWinList(userInput, selected, filteredResources,
+                               resources);
         }
         break;
       case KEY_BACKSPACE:
         if (userInput.length() > 0) {
           app->deleteInPrompt(userInput);
-          app->drawMainWinList(userInput, selected, filteredResources, resources);
+          app->drawMainWinList(userInput, selected, filteredResources,
+                               resources);
         }
         break;
       case KEY_RESIZE:
@@ -100,12 +103,15 @@ int main(int argc, char *argv[]) {
         app->typeInPrompt(userInput);
         break;
       default:
-        // TODO: allow better typing, meaning show cursor, let user position it to remove spcific parts, maybe even short hands (C-W) to delete words etc etc. Things that I would consider basic in this part
-        // if printable, append to the user input
+        // TODO: allow better typing, meaning show cursor, let user position it
+        // to remove spcific parts, maybe even short hands (C-W) to delete words
+        // etc etc. Things that I would consider basic in this part if
+        // printable, append to the user input
         if (isprint(keyPress)) {
           userInput.push_back(keyPress);
           app->typeInPrompt(userInput);
-          app->drawMainWinList(userInput, selected, filteredResources, resources);
+          app->drawMainWinList(userInput, selected, filteredResources,
+                               resources);
         }
     }
   }
