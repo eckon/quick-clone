@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
         }
         break;
       case KEY_DOWN:
-        if (selected < filteredResources.size() - 1) {
+        if (selected < (int) filteredResources.size() - 1) {
           selected++;
           app->drawMainWinList(userInput, selected, filteredResources, resources);
         }
@@ -98,6 +98,7 @@ int main(int argc, char *argv[]) {
         app->drawMainWinList(userInput, selected, filteredResources, resources);
         app->drawPromptWin();
         app->typeInPrompt(userInput);
+        break;
       default:
         // TODO: allow better typing, meaning show cursor, let user position it to remove spcific parts, maybe even short hands (C-W) to delete words etc etc. Things that I would consider basic in this part
         // if printable, append to the user input

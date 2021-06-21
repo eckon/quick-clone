@@ -47,7 +47,7 @@ bool App::TMPfuzzyFindFilter(Repository resource, std::string filter,
     char filterChar = char(tolower(filter[filterPosition]));
     if (filterChar == char(tolower(r))) {
       filterPosition++;
-      if (filterPosition >= filter.size()) return true;
+      if (filterPosition >= (int) filter.size()) return true;
     }
   }
 
@@ -75,7 +75,7 @@ void App::drawMainWinList(std::string userInput, int &selected,
   }
 
   // if selection is bigger than filtered list -> update selected
-  if (selected > filteredResources.size() - 1) {
+  if (selected > (int) filteredResources.size() - 1) {
     selected = filteredResources.size() - 1;
   }
 
