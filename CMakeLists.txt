@@ -1,16 +1,21 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.16)
 
-project(quick-clone)
+project(qc)
 
 add_compile_options(-Wall -Wextra -Wpedantic)
 
-file(GLOB folderPath src/*.cpp)
-file(GLOB subFolderPath src/**/*.cpp)
-add_executable(qc ${folderPath} ${subFolderPath})
+file(GLOB CPP_FILE_PATHS src/*.cpp src/**/*.cpp)
+add_executable(${PROJECT_NAME} ${CPP_FILE_PATHS})
 
-target_link_libraries(qc ncurses curl)
 
-set_target_properties(qc
+target_link_libraries(
+  ${PROJECT_NAME}
+  ncurses
+  curl
+)
+
+set_target_properties(
+  ${PROJECT_NAME}
   PROPERTIES
   ARCHIVE_OUTPUT_DIRECTORY lib
   LIBRARY_OUTPUT_DIRECTORY lib

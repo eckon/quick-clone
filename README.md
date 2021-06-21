@@ -44,14 +44,13 @@ It uses multiple dependencies (jq, fzf, etc), but might be a better option for o
 - nlohmann/json
 
 
-## Commands
+## Commands for compilation etc.
 ```sh
-# first time
-$ cmake .
-# afterwards run the make/cmake instead
-$ cmake --build .
-# or
-$ make
+# generate Makefile in build/
+$ cmake -S . -B build/
+
+# compile executable (binary can be found in ./build/bin/qc)
+$ make -C build/
 
 # format repository
 $ clang-format -i --style=Google src/**/*.cpp src/**/*.h
