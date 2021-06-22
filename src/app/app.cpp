@@ -66,6 +66,9 @@ void App::drawMainWinList(int &selected,
     selected = filteredResources.size() - 1;
   }
 
+  // because of the previous code, selected can reach -1 -> revert it
+  if (selected < 0) selected = 0;
+
   int row = 0;
   // TODO: instead of offset, position highlight in center on scroll
   // TODO: add good fuzzyfind implementation
