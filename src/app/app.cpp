@@ -1,7 +1,5 @@
 #include "app.h"
 
-#include "../repository.h"
-
 #define COLOR_HIGHLIGHT 1
 
 App *App::instance = 0;

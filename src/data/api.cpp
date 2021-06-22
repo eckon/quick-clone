@@ -1,12 +1,8 @@
+#include "api.h"
+
 #include <curl/curl.h>
 
-#include <cstdio>
-#include <iostream>
-#include <list>
 #include <nlohmann/json.hpp>
-#include <string>
-
-#include "repository.h"
 
 static size_t writeCallback(void *contents, size_t size, size_t nmemb,
                             void *userp) {

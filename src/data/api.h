@@ -2,6 +2,7 @@
 #define API_H
 
 #include <list>
+#include <string>
 
 #include "repository.h"
 
