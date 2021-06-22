@@ -36,7 +36,7 @@ void App::drawMainWinList(std::string userInput, int &selected,
   std::string filter = userInput;
   // calculate how far the view needs to be shifted, to have selection always
   // in focus this currently results in the cursor sticking to the bottom
-  wclear(mainWinField);
+  werase(mainWinField);
   int maxHeight = getmaxy(mainWinField);
   int offset = (selected + 1) - maxHeight;
   if (offset < 0) offset = 0;
