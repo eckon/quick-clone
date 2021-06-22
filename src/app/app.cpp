@@ -7,6 +7,8 @@
 
 #include "../repository.h"
 
+#define COLOR_HIGHLIGHT 1
+
 App *App::instance = 0;
 
 App *App::getInstance() {
@@ -28,6 +30,16 @@ App::App() {
   noecho();     // do not echo the button press
   cbreak();     // set mode
   curs_set(0);  // hide cursor
+
+  // setup colors
+  if (!has_colors()) {
+    endwin();
+    printf("Your terminal does not support color\n");
+    exit(1);
+  }
+
+  start_color();
+  init_pair(COLOR_HIGHLIGHT, COLOR_BLUE, COLOR_BLACK);
 }
 
 void App::drawMainWinList(std::string userInput, int &selected,
@@ -57,8 +69,10 @@ void App::drawMainWinList(std::string userInput, int &selected,
 
   int row = 0;
   // TODO: instead of offset, position highlight in center on scroll
+  // TODO: add good fuzzyfind implementation
   // TODO: combine filtering and showing more closely together to make
-  // highlighting easier
+  // highlighting easier but not as it is now (merged together) but not as it is
+  // now (merged together)
   for (auto const &resource : filteredResources) {
     if (row == selected) wattron(mainWinField, A_REVERSE);
     // get the position of the substring to highlight its length
@@ -70,16 +84,16 @@ void App::drawMainWinList(std::string userInput, int &selected,
     for (int column = 0; column < resource.ssh_url_to_repo.size(); column++) {
       // activate highlight starting when we are at the found position
       if (hasFilter && column >= highlightPosition) {
-        wattron(mainWinField, A_BOLD);
+        wattron(mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
       }
 
       // deactivate highlight if we shot over the last position
       if (column >= highlightPosition + filter.size()) {
-        wattroff(mainWinField, A_BOLD);
+        wattroff(mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
       }
       mvwaddch(mainWinField, row - offset, column,
                resource.ssh_url_to_repo[column]);
-      wattroff(mainWinField, A_BOLD);
+      wattroff(mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
     }
     wattroff(mainWinField, A_REVERSE);
     row++;
