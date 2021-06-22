@@ -14,7 +14,6 @@
 // something like "hide" their state
 std::list<Repository> resources = {};
 std::list<Repository> filteredResources = {};
-std::string userInput = "";
 // TODO: increase this by abstracting it into methods "next/previous"
 int selected = 0;
 
@@ -64,7 +63,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  app->drawMainWinList(userInput, selected, filteredResources, resources);
+  app->drawMainWinList(selected, filteredResources, resources);
 
   int keyPress;
   while (true) {
@@ -77,30 +76,25 @@ int main(int argc, char *argv[]) {
       case KEY_UP:
         if (selected > 0) {
           selected--;
-          app->drawMainWinList(userInput, selected, filteredResources,
-                               resources);
+          app->drawMainWinList(selected, filteredResources, resources);
         }
         break;
       case KEY_DOWN:
         if (selected < (int)filteredResources.size() - 1) {
           selected++;
-          app->drawMainWinList(userInput, selected, filteredResources,
-                               resources);
+          app->drawMainWinList(selected, filteredResources, resources);
         }
         break;
       case KEY_BACKSPACE:
-        if (userInput.length() > 0) {
-          app->deleteInPrompt(userInput);
-          app->drawMainWinList(userInput, selected, filteredResources,
-                               resources);
-        }
+        app->deleteInPrompt();
+        app->drawMainWinList(selected, filteredResources, resources);
         break;
       case KEY_RESIZE:
         // Redraw whole app when terminal gets resized
         app->drawMainWin();
-        app->drawMainWinList(userInput, selected, filteredResources, resources);
+        app->drawMainWinList(selected, filteredResources, resources);
         app->drawPromptWin();
-        app->typeInPrompt(userInput);
+        app->typeInPrompt();
         break;
       default:
         // TODO: allow better typing, meaning show cursor, let user position it
@@ -108,10 +102,9 @@ int main(int argc, char *argv[]) {
         // etc etc. Things that I would consider basic in this part if
         // printable, append to the user input
         if (isprint(keyPress)) {
-          userInput.push_back(keyPress);
-          app->typeInPrompt(userInput);
-          app->drawMainWinList(userInput, selected, filteredResources,
-                               resources);
+          app->pushKey(keyPress);
+          app->typeInPrompt();
+          app->drawMainWinList(selected, filteredResources, resources);
         }
     }
   }

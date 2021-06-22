@@ -33,17 +33,20 @@ App::App() {
 
   start_color();
   init_pair(COLOR_HIGHLIGHT, COLOR_BLUE, COLOR_BLACK);
+
+  // prepare prompt for user input
+  this->userInput = "";
 }
 
-int App::getKeyPress() {
-    return wgetch(this->promptWinField);
-}
+int App::getKeyPress() { return wgetch(this->promptWinField); }
 
-void App::drawMainWinList(std::string userInput, int &selected,
+void App::pushKey(int key) { this->userInput.push_back(key); }
+
+void App::drawMainWinList(int &selected,
                           std::list<Repository> &filteredResources,
                           std::list<Repository> resources) {
   // TODO allow multiple filter words (maybe indicated by SPACE)
-  std::string filter = userInput;
+  std::string filter = this->userInput;
   // calculate how far the view needs to be shifted, to have selection always
   // in focus this currently results in the cursor sticking to the bottom
   werase(mainWinField);
@@ -99,14 +102,16 @@ void App::drawMainWinList(std::string userInput, int &selected,
   wrefresh(mainWinField);
 }
 
-void App::deleteInPrompt(std::string &userInput) {
-  userInput.pop_back();
-  mvwprintw(promptWinField, 0, userInput.length(), " ");
+void App::deleteInPrompt() {
+  if (this->userInput.size() <= 0) return;
+
+  this->userInput.pop_back();
+  mvwprintw(promptWinField, 0, this->userInput.length(), " ");
   wrefresh(promptWinField);
 }
 
-void App::typeInPrompt(std::string userInput) {
-  mvwprintw(promptWinField, 0, 0, userInput.c_str());
+void App::typeInPrompt() {
+  mvwprintw(promptWinField, 0, 0, this->userInput.c_str());
   wrefresh(promptWinField);
 }
 

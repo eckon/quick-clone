@@ -20,19 +20,22 @@ class App {
   WINDOW *promptWinBorder;
   WINDOW *promptWinField;
 
+  std::string userInput;
+
  public:
   ~App();
 
   static App *getInstance();
 
-  void drawMainWinList(std::string, int &, std::list<Repository> &,
+  void drawMainWinList(int &, std::list<Repository> &,
                        std::list<Repository>);
-  void deleteInPrompt(std::string &);
-  void typeInPrompt(std::string);
+  void deleteInPrompt();
+  void typeInPrompt();
   void drawPromptWin();
   void drawMainWin();
   void stop();
   int getKeyPress();
+  void pushKey(int);
 };
 
 #endif
