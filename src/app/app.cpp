@@ -30,30 +30,6 @@ App::App() {
   curs_set(0);  // hide cursor
 }
 
-bool App::TMPfuzzyFindFilter(Repository resource, std::string filter,
-                             bool strict) {
-  // empty filter allowes everything
-  if (filter.size() == 0) return true;
-
-  // if strict, try finding an exact match
-  if (strict) {
-    return resource.ssh_url_to_repo.find(filter) != std::string::npos;
-  }
-
-  // check if every char in filter exists in the resource (but in order)
-  // "abc" will be okay with "a1b2c" but not "bac"
-  int filterPosition = 0;
-  for (auto const &r : resource.ssh_url_to_repo) {
-    char filterChar = char(tolower(filter[filterPosition]));
-    if (filterChar == char(tolower(r))) {
-      filterPosition++;
-      if (filterPosition >= (int)filter.size()) return true;
-    }
-  }
-
-  return false;
-}
-
 void App::drawMainWinList(std::string userInput, int &selected,
                           std::list<Repository> &filteredResources,
                           std::list<Repository> resources) {
@@ -65,11 +41,11 @@ void App::drawMainWinList(std::string userInput, int &selected,
   int offset = (selected + 1) - maxHeight;
   if (offset < 0) offset = 0;
 
-  // TODO: highlight the matched part
   filteredResources = {};
   for (auto const &resource : resources) {
-    bool valid = this->TMPfuzzyFindFilter(resource, filter, true);
-    if (valid) {
+    bool hasSubString =
+        resource.ssh_url_to_repo.find(filter) != std::string::npos;
+    if (hasSubString) {
       filteredResources.push_back(resource);
     }
   }
@@ -79,14 +55,34 @@ void App::drawMainWinList(std::string userInput, int &selected,
     selected = filteredResources.size() - 1;
   }
 
-  int i = 0;
+  int row = 0;
+  // TODO: instead of offset, position highlight in center on scroll
+  // TODO: combine filtering and showing more closely together to make
+  // highlighting easier
   for (auto const &resource : filteredResources) {
-    if (i == selected) wattron(mainWinField, A_REVERSE);
+    if (row == selected) wattron(mainWinField, A_REVERSE);
+    // get the position of the substring to highlight its length
+    int highlightPosition = resource.ssh_url_to_repo.find(filter);
+    bool hasFilter = filter.size() > 0;
 
-    // TODO: instead of offset, position highlight in center on scroll
-    mvwprintw(mainWinField, i - offset, 0, resource.ssh_url_to_repo.c_str());
+    // instead of printing the whole line with "mvwprintw"
+    // I use the char wise method to be able to highlight individual chars
+    for (int column = 0; column < resource.ssh_url_to_repo.size(); column++) {
+      // activate highlight starting when we are at the found position
+      if (hasFilter && column >= highlightPosition) {
+        wattron(mainWinField, A_BOLD);
+      }
+
+      // deactivate highlight if we shot over the last position
+      if (column >= highlightPosition + filter.size()) {
+        wattroff(mainWinField, A_BOLD);
+      }
+      mvwaddch(mainWinField, row - offset, column,
+               resource.ssh_url_to_repo[column]);
+      wattroff(mainWinField, A_BOLD);
+    }
     wattroff(mainWinField, A_REVERSE);
-    i++;
+    row++;
   }
   wrefresh(mainWinField);
 }

@@ -20,8 +20,6 @@ class App {
   WINDOW *promptWinBorder;
   WINDOW *promptWinField;
 
-  bool TMPfuzzyFindFilter(Repository, std::string, bool);
-
  public:
   ~App();
 
