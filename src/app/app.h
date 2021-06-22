@@ -32,8 +32,7 @@ class App {
   void drawPromptWin();
   void drawMainWin();
   void stop();
-
-  WINDOW *TMPgetPromptWinField();
+  int getKeyPress();
 };
 
 #endif

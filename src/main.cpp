@@ -15,6 +15,7 @@
 std::list<Repository> resources = {};
 std::list<Repository> filteredResources = {};
 std::string userInput = "";
+// TODO: increase this by abstracting it into methods "next/previous"
 int selected = 0;
 
 int main(int argc, char *argv[]) {
@@ -65,14 +66,13 @@ int main(int argc, char *argv[]) {
 
   app->drawMainWinList(userInput, selected, filteredResources, resources);
 
-  // Prompt Data
   int keyPress;
-
   while (true) {
+    keyPress = app->getKeyPress();
+
     // Terminate on ENTER
     if (keyPress == 10) break;
 
-    keyPress = wgetch(app->TMPgetPromptWinField());
     switch (keyPress) {
       case KEY_UP:
         if (selected > 0) {

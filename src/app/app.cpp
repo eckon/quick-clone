@@ -1,10 +1,5 @@
 #include "app.h"
 
-#include <ncurses.h>
-
-#include <list>
-#include <string>
-
 #include "../repository.h"
 
 #define COLOR_HIGHLIGHT 1
@@ -17,8 +12,6 @@ App *App::getInstance() {
   }
   return instance;
 }
-
-WINDOW *App::TMPgetPromptWinField() { return this->promptWinField; }
 
 App::~App() { endwin(); }
 
@@ -42,9 +35,14 @@ App::App() {
   init_pair(COLOR_HIGHLIGHT, COLOR_BLUE, COLOR_BLACK);
 }
 
+int App::getKeyPress() {
+    return wgetch(this->promptWinField);
+}
+
 void App::drawMainWinList(std::string userInput, int &selected,
                           std::list<Repository> &filteredResources,
                           std::list<Repository> resources) {
+  // TODO allow multiple filter words (maybe indicated by SPACE)
   std::string filter = userInput;
   // calculate how far the view needs to be shifted, to have selection always
   // in focus this currently results in the cursor sticking to the bottom
