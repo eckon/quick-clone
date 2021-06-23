@@ -83,14 +83,15 @@ void App::drawMainWinList(int &selected,
 
     // instead of printing the whole line with "mvwprintw"
     // I use the char wise method to be able to highlight individual chars
-    for (int column = 0; column < resource.ssh_url_to_repo.size(); column++) {
+    int maxColumns = (int)resource.ssh_url_to_repo.size();
+    for (int column = 0; column < maxColumns; column++) {
       // activate highlight starting when we are at the found position
       if (hasFilter && column >= highlightPosition) {
         wattron(mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
       }
 
       // deactivate highlight if we shot over the last position
-      if (column >= highlightPosition + filter.size()) {
+      if (column >= highlightPosition + (int)filter.size()) {
         wattroff(mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
       }
       mvwaddch(mainWinField, row - offset, column,
