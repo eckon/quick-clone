@@ -44,19 +44,9 @@ void App::drawMainWinList(ResourceCollection &collection) {
   // TODO allow multiple filter words (maybe indicated by SPACE)
   std::string filter = this->userInput;
 
-  // calculate how far the view needs to be shifted, to have selection always
-  // in focus this currently results in the cursor sticking to the bottom
   werase(mainWinField);
-  int maxHeight = getmaxy(mainWinField);
-  int offset = (collection.selected + 1) - maxHeight;
-  if (offset < 0) offset = 0;
 
-  // set hidden flag of resource, when it does not fit filter
-  for (auto &resource : collection.resources) {
-    bool hasSubString =
-        resource.repository.ssh_url_to_repo.find(filter) != std::string::npos;
-    resource.hidden = !hasSubString;
-  }
+  auto filteredResources = collection.getFilteredResources(filter);
 
   // check if the selected element is hidden, if so, reset selected
   if (collection.resources[collection.selected].hidden) {
@@ -64,20 +54,28 @@ void App::drawMainWinList(ResourceCollection &collection) {
     if (previousExists) collection.next();
   }
 
-  int row = 0;               // for displaying it
-  int elementPosition = -1;  // for knowing which list entry to show
+  // get the index of the filteredResources instead of the whole resources
+  int selectedIndex = 0;
+  for (auto const &r : filteredResources) {
+    if (r.index == collection.selected) break;
+
+    selectedIndex++;
+  }
+
+  // calculate how far the view needs to be shifted, to have selection always
+  // in focus this currently results in the cursor sticking to the bottom
+  int maxHeight = getmaxy(mainWinField);
+  int offset = (selectedIndex + 1) - maxHeight;
+  if (offset < 0) offset = 0;
+
   // TODO: instead of offset, position highlight in center on scroll
   // TODO: add good fuzzyfind implementation
   // TODO: combine filtering and showing more closely together to make
   // highlighting easier but not as it is now (merged together) but not as it is
   // now (merged together)
-  for (auto const &resource : collection.resources) {
-    elementPosition++;
-
-    if (resource.hidden) continue;
-
-    if (elementPosition == collection.selected)
-      wattron(mainWinField, A_REVERSE);
+  int row = 0;
+  for (auto const &resource : filteredResources) {
+    if (row == selectedIndex) wattron(mainWinField, A_REVERSE);
 
     // get the position of the substring to highlight its length
     int highlightPosition = resource.repository.ssh_url_to_repo.find(filter);

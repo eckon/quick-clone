@@ -10,6 +10,7 @@ class Resource {
  public:
   Repository repository;
   bool hidden;
+  int index;
 
   Resource();
   Resource(Repository repository);
@@ -25,6 +26,8 @@ class ResourceCollection {
 
   bool next();
   bool previous();
+  void applyFilter(std::string filter);
+  std::vector<Resource> getFilteredResources(std::string filter);
 };
 
 #endif
