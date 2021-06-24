@@ -20,6 +20,9 @@ class ResourceCollection {
   int selected;
 
   ResourceCollection(std::vector<Repository> repositories);
+
+  bool next();
+  bool previous();
 };
 
 #endif
