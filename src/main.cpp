@@ -6,16 +6,9 @@
 #include "app/app.h"
 #include "data/api.h"
 #include "data/repository.h"
+#include "data/resource.h"
 
-#define DEV false
-
-// TODO: these global ones should be put with the ui into its own class
-// TODO: make one construct out of these two resources, use one and toggle with
-// something like "hide" their state
-std::list<Repository> resources = {};
-std::list<Repository> filteredResources = {};
-// TODO: increase this by abstracting it into methods "next/previous"
-int selected = 0;
+#define DEV true
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
@@ -41,18 +34,18 @@ int main(int argc, char *argv[]) {
   app->drawMainWin();
   app->drawPromptWin();
 
+  std::vector<Repository> repositories = {};
+
   // Add data for the list (in MainWin) and draw it
   // TODO: get data from user inside of application not on startup
   if (DEV) {
     for (int i = 0; i < 100; i++) {
       Repository repo("Example Number " + std::to_string(i), "", "", "", "");
-      resources.push_back(repo);
-      filteredResources.push_back(repo);
+      repositories.push_back(repo);
     }
   } else {
     try {
-      resources = getRepoResources(searchValue);
-      filteredResources = getRepoResources(searchValue);
+      repositories = getRepoResources(searchValue);
     } catch (std::string error) {
       // TODO: Print error somewhere where it can be seen
       // mvwprintw(mainWinField, 0, 0, error.c_str());
@@ -63,10 +56,14 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  app->drawMainWinList(selected, filteredResources, resources);
+  ResourceCollection collection(repositories);
+  app->drawMainWinList(collection);
 
   int keyPress;
   while (true) {
+    // TODO: figure out why the wgetch() is needed for my screen to be rendered
+    // I want to be able to draw without a sideeffect
+    // meaning without while loop i want to see the application
     keyPress = app->getKeyPress();
 
     // Terminate on ENTER
@@ -74,25 +71,21 @@ int main(int argc, char *argv[]) {
 
     switch (keyPress) {
       case KEY_UP:
-        if (selected > 0) {
-          selected--;
-          app->drawMainWinList(selected, filteredResources, resources);
-        }
+        collection.previous();
+        app->drawMainWinList(collection);
         break;
       case KEY_DOWN:
-        if (selected < (int)filteredResources.size() - 1) {
-          selected++;
-          app->drawMainWinList(selected, filteredResources, resources);
-        }
+        collection.next();
+        app->drawMainWinList(collection);
         break;
       case KEY_BACKSPACE:
         app->deleteInPrompt();
-        app->drawMainWinList(selected, filteredResources, resources);
+        app->drawMainWinList(collection);
         break;
       case KEY_RESIZE:
         // Redraw whole app when terminal gets resized
         app->drawMainWin();
-        app->drawMainWinList(selected, filteredResources, resources);
+        app->drawMainWinList(collection);
         app->drawPromptWin();
         app->typeInPrompt();
         break;
@@ -101,10 +94,11 @@ int main(int argc, char *argv[]) {
         // to remove spcific parts, maybe even short hands (C-W) to delete words
         // etc etc. Things that I would consider basic in this part if
         // printable, append to the user input
+        // also stuff like copy&paste
         if (isprint(keyPress)) {
           app->pushKey(keyPress);
           app->typeInPrompt();
-          app->drawMainWinList(selected, filteredResources, resources);
+          app->drawMainWinList(collection);
         }
     }
   }
@@ -113,7 +107,7 @@ int main(int argc, char *argv[]) {
 
   // Final process -> get selected value and clone the repo in current directory
   Repository selectedRepository =
-      *std::next(filteredResources.begin(), selected);
+      collection.resources[collection.selected].repository;
 
   std::string command = "git clone " + selectedRepository.ssh_url_to_repo;
   std::system(command.c_str());
