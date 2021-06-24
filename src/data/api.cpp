@@ -11,11 +11,11 @@ static size_t writeCallback(void *contents, size_t size, size_t nmemb,
 }
 
 // TODO: this or parts of it should be in the repo file
-std::list<Repository> getRepoResources(std::string searchValue) {
+std::vector<Repository> getRepoResources(std::string searchValue) {
   CURL *curl;
   CURLcode res;
   std::string readBuffer;
-  std::list<Repository> repositories;
+  std::vector<Repository> repositories;
   long httpCode = 0;
 
   std::string gitlabAccessToken = std::getenv("GITLAB_ACCESS_TOKEN");
