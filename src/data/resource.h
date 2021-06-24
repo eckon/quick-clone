@@ -5,6 +5,7 @@
 
 #include "repository.h"
 
+// TODO: make repository/hidden private
 class Resource {
  public:
   Repository repository;
@@ -14,6 +15,7 @@ class Resource {
   Resource(Repository repository);
 };
 
+// TODO: make resources/selected private
 class ResourceCollection {
  public:
   std::vector<Resource> resources;

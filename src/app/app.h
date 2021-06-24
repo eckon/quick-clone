@@ -28,7 +28,6 @@ class App {
 
   static App *getInstance();
 
-  void drawMainWinList(int &, std::list<Repository> &, std::list<Repository>);
   void drawMainWinList(ResourceCollection &collection);
   void deleteInPrompt();
   void typeInPrompt();
