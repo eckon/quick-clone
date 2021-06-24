@@ -40,6 +40,72 @@ int App::getKeyPress() { return wgetch(this->promptWinField); }
 
 void App::pushKey(int key) { this->userInput.push_back(key); }
 
+void App::drawMainWinList(ResourceCollection &collection) {
+  // TODO allow multiple filter words (maybe indicated by SPACE)
+  std::string filter = this->userInput;
+
+  // calculate how far the view needs to be shifted, to have selection always
+  // in focus this currently results in the cursor sticking to the bottom
+  werase(mainWinField);
+  int maxHeight = getmaxy(mainWinField);
+  int offset = (collection.selected + 1) - maxHeight;
+  if (offset < 0) offset = 0;
+
+  // set hidden flag of resource, when it does not fit filter
+  for (auto &resource : collection.resources) {
+    bool hasSubString =
+        resource.repository.ssh_url_to_repo.find(filter) != std::string::npos;
+    resource.hidden = !hasSubString;
+  }
+
+  // check if the selected element is hidden, if so, reset selected
+  if (collection.resources[collection.selected].hidden) {
+    bool previousExists = !collection.previous();
+    if (previousExists) collection.next();
+  }
+
+  int row = 0;               // for displaying it
+  int elementPosition = -1;  // for knowing which list entry to show
+  // TODO: instead of offset, position highlight in center on scroll
+  // TODO: add good fuzzyfind implementation
+  // TODO: combine filtering and showing more closely together to make
+  // highlighting easier but not as it is now (merged together) but not as it is
+  // now (merged together)
+  for (auto const &resource : collection.resources) {
+    elementPosition++;
+
+    if (resource.hidden) continue;
+
+    if (elementPosition == collection.selected)
+      wattron(mainWinField, A_REVERSE);
+
+    // get the position of the substring to highlight its length
+    int highlightPosition = resource.repository.ssh_url_to_repo.find(filter);
+    bool hasFilter = filter.size() > 0;
+
+    // instead of printing the whole line with "mvwprintw"
+    // I use the char wise method to be able to highlight individual chars
+    int maxColumns = (int)resource.repository.ssh_url_to_repo.size();
+    for (int column = 0; column < maxColumns; column++) {
+      // activate highlight starting when we are at the found position
+      if (hasFilter && column >= highlightPosition) {
+        wattron(mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
+      }
+
+      // deactivate highlight if we shot over the last position
+      if (column >= highlightPosition + (int)filter.size()) {
+        wattroff(mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
+      }
+      mvwaddch(mainWinField, row - offset, column,
+               resource.repository.ssh_url_to_repo[column]);
+      wattroff(mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
+    }
+    wattroff(mainWinField, A_REVERSE);
+    row++;
+  }
+  wrefresh(mainWinField);
+}
+
 void App::drawMainWinList(int &selected,
                           std::list<Repository> &filteredResources,
                           std::list<Repository> resources) {
