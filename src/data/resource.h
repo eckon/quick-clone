@@ -1,24 +1,25 @@
 #ifndef RESOURCE_H
 #define RESOURCE_H
 
-#include <list>
+#include <vector>
 
 #include "repository.h"
 
 class Resource {
  public:
-  Repository *repository;
+  Repository repository;
   bool hidden;
 
-  Resource(Repository &repository);
+  Resource();
+  Resource(Repository repository);
 };
 
 class ResourceCollection {
  public:
-  std::list<Resource> resources;
+  std::vector<Resource> resources;
   int selected;
 
-  ResourceCollection(std::list<Repository> repositories);
+  ResourceCollection(std::vector<Repository> repositories);
 };
 
 #endif

@@ -9,3 +9,11 @@ Repository::Repository(std::string ssh_url_to_repo, std::string name,
   this->http_url_to_repo = http_url_to_repo;
   this->web_url = web_url;
 }
+
+Repository::Repository() {
+  this->ssh_url_to_repo = "";
+  this->name = "";
+  this->name_with_namespace = "";
+  this->http_url_to_repo = "";
+  this->web_url = "";
+}
