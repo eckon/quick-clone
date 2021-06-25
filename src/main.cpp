@@ -32,9 +32,26 @@ int main() {
 
   // TODO: handle if the collection has no repositories (on init)
   // for now just pass one empty repo as a quick fix
-  Repository repo("Query git: Just type in 'Query' and press ENTER", "", "", "",
-                  "");
-  repositories.push_back(repo);
+  Repository tut1("Type in 'Query' to request API data", "", "", "", "");
+  Repository tut2(
+      "Submit in 'Query' with ENTER (this will add data to the List)", "", "",
+      "", "");
+  Repository tut3(
+      "Type in 'Filter' to filter list (returned after 'Query' Step)", "", "",
+      "", "");
+  Repository tut4("Up and DOWN lets you select repository", "", "", "", "");
+  Repository tut5("Clone repository in 'Filter' with ENTER", "", "", "", "");
+  Repository tut6("LEFT and RIGHT lets you switch between 'Query' and 'Filter'",
+                  "", "", "", "");
+  Repository emptyLine("", "", "", "", "");
+  repositories.push_back(tut1);
+  repositories.push_back(tut2);
+  repositories.push_back(emptyLine);
+  repositories.push_back(tut3);
+  repositories.push_back(tut4);
+  repositories.push_back(tut5);
+  repositories.push_back(emptyLine);
+  repositories.push_back(tut6);
 
   // TODO: the collection should not be handled here, it should be passed once
   // and then handled by the app
@@ -67,6 +84,8 @@ int main() {
           if (repositories.empty()) {
             Repository repo("Nothing found with: " + userInput, "", "", "", "");
             repositories.push_back(repo);
+            // QUICKFIX: return to the current one (because it will go to next)
+            app->previousPrompt();
           }
 
           // just overwrite the collection with the new data
