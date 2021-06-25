@@ -54,7 +54,7 @@ void App::drawMainWinList(ResourceCollection &collection) {
   // TODO allow multiple filter words (maybe indicated by SPACE)
   std::string filter = this->userInput;
 
-  werase(mainWinField);
+  werase(this->mainWinField);
 
   auto filteredResources = collection.getFilteredResources(filter);
 
@@ -68,7 +68,7 @@ void App::drawMainWinList(ResourceCollection &collection) {
 
   // calculate how far the view needs to be shifted, to have selection always
   // in focus this currently results in the cursor sticking to the bottom
-  int maxHeight = getmaxy(mainWinField);
+  int maxHeight = getmaxy(this->mainWinField);
   int offset = (selectedIndex + 1) - maxHeight;
   if (offset < 0) offset = 0;
 
@@ -79,7 +79,7 @@ void App::drawMainWinList(ResourceCollection &collection) {
   // now (merged together)
   int row = 0;
   for (auto const &resource : filteredResources) {
-    if (row == selectedIndex) wattron(mainWinField, A_REVERSE);
+    if (row == selectedIndex) wattron(this->mainWinField, A_REVERSE);
 
     // get the position of the substring to highlight its length
     int highlightPosition = resource.repository.ssh_url_to_repo.find(filter);
@@ -91,21 +91,21 @@ void App::drawMainWinList(ResourceCollection &collection) {
     for (int column = 0; column < maxColumns; column++) {
       // activate highlight starting when we are at the found position
       if (hasFilter && column >= highlightPosition) {
-        wattron(mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
+        wattron(this->mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
       }
 
       // deactivate highlight if we shot over the last position
       if (column >= highlightPosition + (int)filter.size()) {
-        wattroff(mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
+        wattroff(this->mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
       }
-      mvwaddch(mainWinField, row - offset, column,
+      mvwaddch(this->mainWinField, row - offset, column,
                resource.repository.ssh_url_to_repo[column]);
-      wattroff(mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
+      wattroff(this->mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
     }
-    wattroff(mainWinField, A_REVERSE);
+    wattroff(this->mainWinField, A_REVERSE);
     row++;
   }
-  wrefresh(mainWinField);
+  wrefresh(this->mainWinField);
 }
 
 void App::deleteInPrompt() {
@@ -114,13 +114,13 @@ void App::deleteInPrompt() {
   this->userInput.pop_back();
   // overwrite character with a space to simulate deletion
   // mainly to prevent of redrawing everything
-  mvwprintw(promptWinField, 0, this->userInput.length(), " ");
-  wrefresh(promptWinField);
+  mvwprintw(this->promptWinField, 0, this->userInput.length(), " ");
+  wrefresh(this->promptWinField);
 }
 
 void App::typeInPrompt() {
-  mvwprintw(promptWinField, 0, 0, this->userInput.c_str());
-  wrefresh(promptWinField);
+  mvwprintw(this->promptWinField, 0, 0, this->userInput.c_str());
+  wrefresh(this->promptWinField);
 }
 
 void App::drawPromptWin() {
@@ -132,20 +132,20 @@ void App::drawPromptWin() {
   promptStartX = 0;
 
   // Surrounding box of input field
-  promptWinBorder =
+  this->promptWinBorder =
       newwin(promptHeight, promptWidth, promptStartY, promptStartX);
-  box(promptWinBorder, 0, 0);
-  mvwprintw(promptWinBorder, 0, 1, "Prompt");
-  wrefresh(promptWinBorder);
+  box(this->promptWinBorder, 0, 0);
+  mvwprintw(this->promptWinBorder, 0, 1, "Prompt");
+  wrefresh(this->promptWinBorder);
 
   // Info: Ignore scroll, because filter should be shorter than links anyways
-  promptWinField =
+  this->promptWinField =
       newwin(1, promptWidth - 2, promptStartY + 1, promptStartX + 1);
-  keypad(promptWinField, true);
+  keypad(this->promptWinField, true);
 
   // make the prompt non-blocking, meaning we do not wait on user input
-  nodelay(promptWinField, true);
-  wrefresh(promptWinField);
+  nodelay(this->promptWinField, true);
+  wrefresh(this->promptWinField);
 }
 
 void App::drawMainWin() {
@@ -156,13 +156,14 @@ void App::drawMainWin() {
   mainStartX = mainStartY = 0;
 
   // Surrounding box of input field
-  mainWinBorder = newwin(mainHeight - 3, mainWidth, mainStartY, mainStartX);
-  box(mainWinBorder, 0, 0);
-  mvwprintw(mainWinBorder, 0, 1, "Main");
-  wrefresh(mainWinBorder);
+  this->mainWinBorder =
+      newwin(mainHeight - 3, mainWidth, mainStartY, mainStartX);
+  box(this->mainWinBorder, 0, 0);
+  mvwprintw(this->mainWinBorder, 0, 1, "Main");
+  wrefresh(this->mainWinBorder);
 
   // Input field
-  mainWinField =
+  this->mainWinField =
       newwin(mainHeight - 5, mainWidth - 2, mainStartY + 1, mainStartX + 1);
-  wrefresh(mainWinField);
+  wrefresh(this->mainWinField);
 }
