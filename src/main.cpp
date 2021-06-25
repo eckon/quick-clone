@@ -71,20 +71,16 @@ int main(int argc, char *argv[]) {
     switch (keyPress) {
       case KEY_UP:
         collection.previous();
-        app->drawMainWinList(collection);
         break;
       case KEY_DOWN:
         collection.next();
-        app->drawMainWinList(collection);
         break;
       case KEY_BACKSPACE:
         app->deleteInPrompt();
-        app->drawMainWinList(collection);
         break;
       case KEY_RESIZE:
         // Redraw whole app when terminal gets resized
         app->drawMainWin();
-        app->drawMainWinList(collection);
         app->drawPromptWin();
         app->typeInPrompt();
         break;
@@ -97,9 +93,10 @@ int main(int argc, char *argv[]) {
         if (isprint(keyPress)) {
           app->pushKey(keyPress);
           app->typeInPrompt();
-          app->drawMainWinList(collection);
         }
     }
+
+    app->drawMainWinList(collection);
   }
 
   delete app;
