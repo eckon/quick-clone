@@ -37,13 +37,18 @@ App::App() {
 
 int App::getKeyPress() {
   // always move the cursor to the prompt so we can show the cursor to the user
-  // BUG: when cursor moves offscreen -> it will default back to top left
   int cursorXPosition = this->userInput.length();
   wmove(this->promptWinField, 0, cursorXPosition);
   return wgetch(this->promptWinField);
 }
 
-void App::pushKey(int key) { this->userInput.push_back(key); }
+void App::pushKey(int key) {
+  // small restriction to not allow user input beyond visible field
+  int promptWidth = getmaxx(this->promptWinField);
+  if (promptWidth <= (int)this->userInput.length() + 1) return;
+
+  this->userInput.push_back(key);
+}
 
 void App::drawMainWinList(ResourceCollection &collection) {
   // TODO allow multiple filter words (maybe indicated by SPACE)
