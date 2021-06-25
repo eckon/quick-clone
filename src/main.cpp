@@ -51,10 +51,11 @@ int main() {
     // Terminate on ENTER
     if (keyPress == 10) {
       // TODO: totally overhaul this, needs to be in app or other classes
-      int prompt = app->TMPgetSelectedPrompt();
-      if (prompt == 1) break;
+      App::Prompt prompt = app->TMPgetSelectedPrompt();
+      // if filter, break and continue the program -> clone the selected entry
+      if (prompt == App::Prompt::Filter) break;
 
-      if (prompt == 0) {
+      if (prompt == App::Prompt::Query) {
         // on enter if in query -> request new data from api
         auto userInput = app->TMPgetUserInput();
         app->drawModal("Loading with query: " + userInput);

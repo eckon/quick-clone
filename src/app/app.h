@@ -23,14 +23,15 @@ class App {
   WINDOW *modalWinBorder;
   WINDOW *modalWinField;
 
-  int selectedPrompt;
-
   std::string userInput;
-  std::string searchString;
+  std::string filterString;
   std::string queryString;
 
  public:
   ~App();
+
+  enum Prompt { Query, Filter };
+  App::Prompt selectedPrompt;
 
   static App *getInstance();
 
@@ -46,7 +47,7 @@ class App {
   void nextPrompt();
   void previousPrompt();
 
-  int TMPgetSelectedPrompt();
+  App::Prompt TMPgetSelectedPrompt();
   std::string TMPgetUserInput();
 };
 

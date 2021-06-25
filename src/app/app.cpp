@@ -33,14 +33,13 @@ App::App() {
   init_pair(COLOR_HIGHLIGHT, COLOR_BLUE, COLOR_BLACK);
   init_pair(COLOR_MODAL_BORDER, COLOR_RED, COLOR_BLACK);
 
-  // TODO: use enum to decide between different windows
-  this->selectedPrompt = 0;
+  this->selectedPrompt = App::Prompt::Query;
 
   // prepare prompt for user input
   this->userInput = "";
 
   // save string of specific user input
-  this->searchString = "";
+  this->filterString = "";
   this->queryString = "";
 }
 
@@ -146,12 +145,12 @@ void App::drawPromptWin() {
   box(this->promptWinBorder, 0, 0);
 
   // Add highlight to prompt title
-  if (this->selectedPrompt == 0)
+  if (this->selectedPrompt == App::Prompt::Query)
     wattron(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
   mvwprintw(this->promptWinBorder, 0, 1, "Query");
   wattroff(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
 
-  if (this->selectedPrompt == 1)
+  if (this->selectedPrompt == App::Prompt::Filter)
     wattron(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
   mvwprintw(this->promptWinBorder, 0, 7, "Filter");
   wattroff(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
@@ -214,7 +213,7 @@ void App::drawModal(std::string message) {
   wrefresh(this->modalWinField);
 }
 
-int App::TMPgetSelectedPrompt() { return this->selectedPrompt; }
+App::Prompt App::TMPgetSelectedPrompt() { return this->selectedPrompt; }
 std::string App::TMPgetUserInput() { return this->userInput; }
 
 void App::previousPrompt() {
@@ -226,15 +225,15 @@ void App::nextPrompt() {
   switch (this->selectedPrompt) {
       // switch from query to prompt
     case 0:
-      this->selectedPrompt = 1;
+      this->selectedPrompt = App::Prompt::Filter;
       this->queryString = this->userInput.c_str();
-      this->userInput = this->searchString.c_str();
+      this->userInput = this->filterString.c_str();
       break;
 
       // switch from prompt to query
     case 1:
-      this->selectedPrompt = 0;
-      this->searchString = this->userInput.c_str();
+      this->selectedPrompt = App::Prompt::Query;
+      this->filterString = this->userInput.c_str();
       this->userInput = this->queryString.c_str();
       break;
   }
