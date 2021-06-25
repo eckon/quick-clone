@@ -142,6 +142,9 @@ void App::drawPromptWin() {
   promptWinField =
       newwin(1, promptWidth - 2, promptStartY + 1, promptStartX + 1);
   keypad(promptWinField, true);
+
+  // make the prompt non-blocking, meaning we do not wait on user input
+  nodelay(promptWinField, true);
   wrefresh(promptWinField);
 }
 

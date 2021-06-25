@@ -66,6 +66,11 @@ int main(int argc, char *argv[]) {
     // meaning without while loop i want to see the application
     keyPress = app->getKeyPress();
 
+    // if we are non-blocking -> do something else instead of waiting for user
+    if (keyPress == ERR) {
+      continue;
+    }
+
     // Terminate on ENTER
     if (keyPress == 10) break;
 
