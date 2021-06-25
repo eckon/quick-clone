@@ -1,6 +1,7 @@
 #include "app.h"
 
 #define COLOR_HIGHLIGHT 1
+#define COLOR_MODAL_BORDER 2
 
 App *App::instance = 0;
 
@@ -30,6 +31,7 @@ App::App() {
 
   start_color();
   init_pair(COLOR_HIGHLIGHT, COLOR_BLUE, COLOR_BLACK);
+  init_pair(COLOR_MODAL_BORDER, COLOR_RED, COLOR_BLACK);
 
   // prepare prompt for user input
   this->userInput = "";
@@ -166,4 +168,32 @@ void App::drawMainWin() {
   this->mainWinField =
       newwin(mainHeight - 5, mainWidth - 2, mainStartY + 1, mainStartX + 1);
   wrefresh(this->mainWinField);
+}
+
+void App::drawModal(std::string message) {
+  int yMax, xMax;
+  getmaxyx(stdscr, yMax, xMax);
+
+  int padding = 3;
+  int padded = xMax - 2 * padding;
+  int modalStartX = padding;
+  int modalStartY = 5;
+  int modalWidth = padded;
+  int modalHeight = 10;
+
+  this->modalWinBorder =
+      newwin(modalHeight, modalWidth, modalStartY, modalStartX);
+  wattron(this->modalWinBorder, COLOR_PAIR(COLOR_MODAL_BORDER));
+  box(this->modalWinBorder, 0, 0);
+  wattron(this->modalWinBorder, COLOR_PAIR(COLOR_MODAL_BORDER));
+  mvwprintw(this->modalWinBorder, 0, 1, "Modal");
+  wrefresh(this->modalWinBorder);
+
+  int yMaxModal, xMaxModal;
+  getmaxyx(this->modalWinBorder, yMaxModal, xMaxModal);
+
+  this->modalWinField =
+      newwin(yMaxModal - 5, xMaxModal - 4, modalStartY + 2, modalStartX + 2);
+  mvwprintw(this->modalWinField, 0, 0, message.c_str());
+  wrefresh(this->modalWinField);
 }

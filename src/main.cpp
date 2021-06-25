@@ -47,12 +47,11 @@ int main(int argc, char *argv[]) {
     try {
       repositories = getRepoResources(searchValue);
     } catch (std::string error) {
-      // TODO: Print error somewhere where it can be seen
-      // mvwprintw(mainWinField, 0, 0, error.c_str());
-      // wrefresh(mainWinField);
-      // wgetch(mainWinField);
-      delete app;
-      return 1;
+      // simple error modal, with inf loop (because we are non blocking)
+      app->drawModal(error);
+      app->getKeyPress();
+      while (1) {
+      }
     }
   }
 

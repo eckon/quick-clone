@@ -20,6 +20,8 @@ class App {
   WINDOW *mainWinField;
   WINDOW *promptWinBorder;
   WINDOW *promptWinField;
+  WINDOW *modalWinBorder;
+  WINDOW *modalWinField;
 
   std::string userInput;
 
@@ -33,6 +35,7 @@ class App {
   void typeInPrompt();
   void drawPromptWin();
   void drawMainWin();
+  void drawModal(std::string message);
   void stop();
   int getKeyPress();
   void pushKey(int);
