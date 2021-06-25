@@ -50,8 +50,8 @@ int main(int argc, char *argv[]) {
       // simple error modal, with inf loop (because we are non blocking)
       app->drawModal(error);
       app->getKeyPress();
-      while (1) {
-      }
+      delete app;
+      return 1;
     }
   }
 
@@ -64,11 +64,6 @@ int main(int argc, char *argv[]) {
     // I want to be able to draw without a sideeffect
     // meaning without while loop i want to see the application
     keyPress = app->getKeyPress();
-
-    // if we are non-blocking -> do something else instead of waiting for user
-    if (keyPress == ERR) {
-      continue;
-    }
 
     // Terminate on ENTER
     if (keyPress == 10) break;
