@@ -33,8 +33,15 @@ App::App() {
   init_pair(COLOR_HIGHLIGHT, COLOR_BLUE, COLOR_BLACK);
   init_pair(COLOR_MODAL_BORDER, COLOR_RED, COLOR_BLACK);
 
+  // TODO: use enum to decide between different windows
+  this->selectedPrompt = 0;
+
   // prepare prompt for user input
   this->userInput = "";
+
+  // save string of specific user input
+  this->searchString = "";
+  this->queryString = "";
 }
 
 int App::getKeyPress() {
@@ -137,7 +144,18 @@ void App::drawPromptWin() {
   this->promptWinBorder =
       newwin(promptHeight, promptWidth, promptStartY, promptStartX);
   box(this->promptWinBorder, 0, 0);
-  mvwprintw(this->promptWinBorder, 0, 1, "Prompt");
+
+  // Add highlight to prompt title
+  if (this->selectedPrompt == 0)
+    wattron(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
+  mvwprintw(this->promptWinBorder, 0, 1, "Query");
+  wattroff(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
+
+  if (this->selectedPrompt == 1)
+    wattron(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
+  mvwprintw(this->promptWinBorder, 0, 7, "Filter");
+  wattroff(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
+
   wrefresh(this->promptWinBorder);
 
   // Info: Ignore scroll, because filter should be shorter than links anyways
@@ -194,4 +212,35 @@ void App::drawModal(std::string message) {
       newwin(yMaxModal - 5, xMaxModal - 4, modalStartY + 2, modalStartX + 2);
   mvwprintw(this->modalWinField, 0, 0, message.c_str());
   wrefresh(this->modalWinField);
+}
+
+int App::TMPgetSelectedPrompt() { return this->selectedPrompt; }
+std::string App::TMPgetUserInput() { return this->userInput; }
+
+void App::previousPrompt() {
+  // have only 2 prompts, so next/previous are the same
+  this->nextPrompt();
+}
+
+void App::nextPrompt() {
+  switch (this->selectedPrompt) {
+      // switch from query to prompt
+    case 0:
+      this->selectedPrompt = 1;
+      this->queryString = this->userInput.c_str();
+      this->userInput = this->searchString.c_str();
+      break;
+
+      // switch from prompt to query
+    case 1:
+      this->selectedPrompt = 0;
+      this->searchString = this->userInput.c_str();
+      this->userInput = this->queryString.c_str();
+      break;
+  }
+
+  werase(this->promptWinField);
+  this->drawPromptWin();
+  this->typeInPrompt();
+  wrefresh(this->promptWinField);
 }

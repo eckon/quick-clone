@@ -23,7 +23,11 @@ class App {
   WINDOW *modalWinBorder;
   WINDOW *modalWinField;
 
+  int selectedPrompt;
+
   std::string userInput;
+  std::string searchString;
+  std::string queryString;
 
  public:
   ~App();
@@ -39,6 +43,11 @@ class App {
   void stop();
   int getKeyPress();
   void pushKey(int);
+  void nextPrompt();
+  void previousPrompt();
+
+  int TMPgetSelectedPrompt();
+  std::string TMPgetUserInput();
 };
 
 #endif

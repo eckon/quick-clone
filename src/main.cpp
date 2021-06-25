@@ -8,24 +8,9 @@
 #include "data/repository.h"
 #include "data/resource.h"
 
-#define DEV true
+#define DEV false
 
-int main(int argc, char *argv[]) {
-  if (argc < 2) {
-    printf("Pass at least one parameter to this command");
-    return 1;
-  }
-
-  std::string searchValue = "";
-  for (int i = 1; i < argc; i++) {
-    searchValue = searchValue + argv[i];
-  }
-
-  if (searchValue.size() < 3) {
-    printf("The passed parameter needs to be at least 3 symbols long");
-    return 1;
-  }
-
+int main() {
   App *app = App::getInstance();
 
   // TODO: draw information about highlighted entry
@@ -43,18 +28,16 @@ int main(int argc, char *argv[]) {
       Repository repo("Example Number " + std::to_string(i), "", "", "", "");
       repositories.push_back(repo);
     }
-  } else {
-    try {
-      repositories = getRepoResources(searchValue);
-    } catch (std::string error) {
-      // simple error modal, with inf loop (because we are non blocking)
-      app->drawModal(error);
-      app->getKeyPress();
-      delete app;
-      return 1;
-    }
   }
 
+  // TODO: handle if the collection has no repositories (on init)
+  // for now just pass one empty repo as a quick fix
+  Repository repo("Query git: Just type in 'Query' and press ENTER", "", "", "",
+                  "");
+  repositories.push_back(repo);
+
+  // TODO: the collection should not be handled here, it should be passed once
+  // and then handled by the app
   ResourceCollection collection(repositories);
   app->drawMainWinList(collection);
 
@@ -66,7 +49,40 @@ int main(int argc, char *argv[]) {
     keyPress = app->getKeyPress();
 
     // Terminate on ENTER
-    if (keyPress == 10) break;
+    if (keyPress == 10) {
+      // TODO: totally overhaul this, needs to be in app or other classes
+      int prompt = app->TMPgetSelectedPrompt();
+      if (prompt == 1) break;
+
+      if (prompt == 0) {
+        // on enter if in query -> request new data from api
+        auto userInput = app->TMPgetUserInput();
+        app->drawModal("Loading with query: " + userInput);
+
+        try {
+          repositories = getRepoResources(userInput);
+
+          // TODO: handle empty repository (currently it crashes)
+          if (repositories.empty()) {
+            Repository repo("Nothing found with: " + userInput, "", "", "", "");
+            repositories.push_back(repo);
+          }
+
+          // just overwrite the collection with the new data
+          collection = ResourceCollection(repositories);
+          app->drawMainWinList(collection);
+
+          // QoL: go to the filter prompt
+          app->nextPrompt();
+        } catch (std::string error) {
+          // simple error modal, with inf loop (because we are non blocking)
+          app->drawModal(error);
+          app->getKeyPress();
+          delete app;
+          return 1;
+        }
+      }
+    }
 
     switch (keyPress) {
       case KEY_UP:
@@ -83,6 +99,12 @@ int main(int argc, char *argv[]) {
         app->drawMainWin();
         app->drawPromptWin();
         app->typeInPrompt();
+        break;
+      case KEY_LEFT:
+        app->previousPrompt();
+        break;
+      case KEY_RIGHT:
+        app->nextPrompt();
         break;
       default:
         // TODO: allow better typing, meaning show cursor, let user position it
