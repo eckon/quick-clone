@@ -17,10 +17,9 @@ App::App() {
   // TODO: loading animation when waiting for curl
   // TODO: use different mode so that it is nonblocking (halfdelay/timeout)
   // might be needed later on when getting http responses
-  initscr();    // init ncurses
-  noecho();     // do not echo the button press
-  cbreak();     // set mode
-  curs_set(0);  // hide cursor
+  initscr();  // init ncurses
+  noecho();   // do not echo the button press
+  cbreak();   // set mode
 
   // setup colors
   if (!has_colors()) {
@@ -36,7 +35,13 @@ App::App() {
   this->userInput = "";
 }
 
-int App::getKeyPress() { return wgetch(this->promptWinField); }
+int App::getKeyPress() {
+  // always move the cursor to the prompt so we can show the cursor to the user
+  // BUG: when cursor moves offscreen -> it will default back to top left
+  int cursorXPosition = this->userInput.length();
+  wmove(this->promptWinField, 0, cursorXPosition);
+  return wgetch(this->promptWinField);
+}
 
 void App::pushKey(int key) { this->userInput.push_back(key); }
 
@@ -108,6 +113,8 @@ void App::deleteInPrompt() {
   if (this->userInput.size() <= 0) return;
 
   this->userInput.pop_back();
+  // overwrite character with a space to simulate deletion
+  // mainly to prevent of redrawing everything
   mvwprintw(promptWinField, 0, this->userInput.length(), " ");
   wrefresh(promptWinField);
 }
