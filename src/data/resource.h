@@ -28,6 +28,7 @@ class ResourceCollection {
   bool previous();
   void applyFilter(std::string filter);
   std::vector<Resource> getFilteredResources(std::string filter);
+  int getFilteredSelectedIndex(std::vector<Resource> filteredResources);
 };
 
 #endif

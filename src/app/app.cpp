@@ -64,13 +64,7 @@ void App::drawMainWinList(ResourceCollection &collection) {
     if (previousExists) collection.next();
   }
 
-  // get the index of the filteredResources instead of the whole resources
-  int selectedIndex = 0;
-  for (auto const &r : filteredResources) {
-    if (r.index == collection.selected) break;
-
-    selectedIndex++;
-  }
+  int selectedIndex = collection.getFilteredSelectedIndex(filteredResources);
 
   // calculate how far the view needs to be shifted, to have selection always
   // in focus this currently results in the cursor sticking to the bottom

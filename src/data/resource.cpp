@@ -70,3 +70,15 @@ bool ResourceCollection::next() {
 
   return false;
 }
+
+int ResourceCollection::getFilteredSelectedIndex(
+    std::vector<Resource> filteredResources) {
+  int selectedIndex = 0;
+  for (auto const &r : filteredResources) {
+    if (r.index == this->selected) break;
+
+    selectedIndex++;
+  }
+
+  return selectedIndex;
+}
