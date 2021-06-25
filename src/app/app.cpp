@@ -59,6 +59,20 @@ void App::pushKey(int key) {
 }
 
 void App::drawMainWinList(ResourceCollection &collection) {
+  // TODO: do this differently, like this selection is still changeable
+  // QUICKFIX: if query, only print collection, nothing else
+  if (this->selectedPrompt == App::Prompt::Query) {
+    int row = 0;
+    for (auto const &resource : collection.resources) {
+      mvwprintw(this->mainWinField, row, 0,
+                resource.repository.ssh_url_to_repo.c_str());
+      row++;
+    }
+
+    wrefresh(this->mainWinField);
+    return;
+  }
+
   // TODO allow multiple filter words (maybe indicated by SPACE)
   std::string filter = this->userInput;
 
@@ -176,7 +190,7 @@ void App::drawMainWin() {
   this->mainWinBorder =
       newwin(mainHeight - 3, mainWidth, mainStartY, mainStartX);
   box(this->mainWinBorder, 0, 0);
-  mvwprintw(this->mainWinBorder, 0, 1, "Main");
+  mvwprintw(this->mainWinBorder, 0, 1, "Repository List");
   wrefresh(this->mainWinBorder);
 
   // Input field
