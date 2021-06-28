@@ -10,6 +10,41 @@
 
 #define DEV false
 
+ResourceCollection TMPrequestNewData(ResourceCollection collection) {
+  App *app = App::getInstance();
+  // on enter if in query -> request new data from api
+  auto userInput = app->TMPgetUserInput();
+  app->drawModal("Loading with query: " + userInput);
+
+  std::vector<Repository> repositories = {};
+  try {
+    repositories = getRepoResources(userInput);
+
+    // TODO: handle empty repository (currently it crashes)
+    if (repositories.empty()) {
+      Repository repo("Nothing found with: " + userInput, "", "", "", "");
+      repositories.push_back(repo);
+      // QUICKFIX: return to the current one (because it will go to next)
+      app->previousPrompt();
+    }
+
+    // just overwrite the collection with the new data
+    collection = ResourceCollection(repositories);
+    app->drawMainWinList(collection);
+
+    // QoL: go to the filter prompt
+    app->nextPrompt();
+  } catch (std::string error) {
+    // simple error modal, with inf loop (because we are non blocking)
+    app->drawModal(error);
+    app->getKeyPress();
+    delete app;
+    std::exit(1);
+  }
+
+  return collection;
+}
+
 int main() {
   App *app = App::getInstance();
 
@@ -73,34 +108,7 @@ int main() {
       if (prompt == App::Prompt::Filter) break;
 
       if (prompt == App::Prompt::Query) {
-        // on enter if in query -> request new data from api
-        auto userInput = app->TMPgetUserInput();
-        app->drawModal("Loading with query: " + userInput);
-
-        try {
-          repositories = getRepoResources(userInput);
-
-          // TODO: handle empty repository (currently it crashes)
-          if (repositories.empty()) {
-            Repository repo("Nothing found with: " + userInput, "", "", "", "");
-            repositories.push_back(repo);
-            // QUICKFIX: return to the current one (because it will go to next)
-            app->previousPrompt();
-          }
-
-          // just overwrite the collection with the new data
-          collection = ResourceCollection(repositories);
-          app->drawMainWinList(collection);
-
-          // QoL: go to the filter prompt
-          app->nextPrompt();
-        } catch (std::string error) {
-          // simple error modal, with inf loop (because we are non blocking)
-          app->drawModal(error);
-          app->getKeyPress();
-          delete app;
-          return 1;
-        }
+        collection = TMPrequestNewData(collection);
       }
     }
 
