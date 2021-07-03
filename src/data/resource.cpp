@@ -17,7 +17,8 @@ ResourceCollection::ResourceCollection(std::vector<Repository> repositories) {
   }
 
   this->resources = resources;
-  this->selected = 0;
+  // Set to -1 to easily check if something was selected
+  this->selected = -1;
 }
 
 std::vector<Resource> ResourceCollection::getFilteredResources(

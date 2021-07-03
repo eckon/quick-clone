@@ -8,8 +8,6 @@
 #include "data/repository.h"
 #include "data/resource.h"
 
-#define DEV false
-
 ResourceCollection TMPrequestNewData(ResourceCollection collection) {
   App *app = App::getInstance();
   // on enter if in query -> request new data from api
@@ -22,9 +20,8 @@ ResourceCollection TMPrequestNewData(ResourceCollection collection) {
 
     // TODO: handle empty repository (currently it crashes)
     if (repositories.empty()) {
-      Repository repo("Nothing found with: " + userInput, "", "", "", "");
-      repositories.push_back(repo);
-      // QUICKFIX: return to the current one (because it will go to next)
+      app->drawModal("Search query \"" + userInput + "\" resulted in no hits.");
+      // if we did not find anything, go back to query for next search
       app->previousPrompt();
     }
 
@@ -57,36 +54,9 @@ int main() {
   std::vector<Repository> repositories = {};
 
   // Add data for the list (in MainWin) and draw it
-  // TODO: get data from user inside of application not on startup
-  if (DEV) {
-    for (int i = 0; i < 100; i++) {
-      Repository repo("Example Number " + std::to_string(i), "", "", "", "");
-      repositories.push_back(repo);
-    }
-  }
 
   // TODO: handle if the collection has no repositories (on init)
   // for now just pass one empty repo as a quick fix
-  Repository tut1("Type in 'Query' to request API data", "", "", "", "");
-  Repository tut2(
-      "Submit in 'Query' with ENTER (this will add data to the List)", "", "",
-      "", "");
-  Repository tut3(
-      "Type in 'Filter' to filter list (returned after 'Query' Step)", "", "",
-      "", "");
-  Repository tut4("Up and DOWN lets you select repository", "", "", "", "");
-  Repository tut5("Clone repository in 'Filter' with ENTER", "", "", "", "");
-  Repository tut6("LEFT and RIGHT lets you switch between 'Query' and 'Filter'",
-                  "", "", "", "");
-  Repository emptyLine("", "", "", "", "");
-  repositories.push_back(tut1);
-  repositories.push_back(tut2);
-  repositories.push_back(emptyLine);
-  repositories.push_back(tut3);
-  repositories.push_back(tut4);
-  repositories.push_back(tut5);
-  repositories.push_back(emptyLine);
-  repositories.push_back(tut6);
 
   // TODO: the collection should not be handled here, it should be passed once
   // and then handled by the app
@@ -150,6 +120,11 @@ int main() {
   }
 
   delete app;
+
+  if (collection.selected == -1 || collection.resources.size() <= 0) {
+    std::cout << "Nothing selected, quitting quick-clone" << std::endl;
+    return 0;
+  }
 
   // Final process -> get selected value and clone the repo in current directory
   Repository selectedRepository =

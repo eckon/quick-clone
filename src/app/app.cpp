@@ -59,6 +59,8 @@ void App::pushKey(int key) {
 }
 
 void App::drawMainWinList(ResourceCollection &collection) {
+  if (collection.resources.size() <= 0) return;
+
   // TODO: do this differently, like this selection is still changeable
   // QUICKFIX: if query, only print collection, nothing else
   if (this->selectedPrompt == App::Prompt::Query) {
