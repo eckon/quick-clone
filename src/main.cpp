@@ -18,11 +18,9 @@ ResourceCollection TMPrequestNewData(ResourceCollection collection) {
   try {
     repositories = getRepoResources(userInput);
 
-    // TODO: handle empty repository (currently it crashes)
     if (repositories.empty()) {
       app->drawModal("Search query \"" + userInput + "\" resulted in no hits.");
-      // if we did not find anything, go back to query for next search
-      app->previousPrompt();
+      return ResourceCollection({});
     }
 
     // just overwrite the collection with the new data
@@ -45,8 +43,6 @@ ResourceCollection TMPrequestNewData(ResourceCollection collection) {
 int main() {
   App *app = App::getInstance();
 
-  // TODO: draw information about highlighted entry
-  // TODO: add way of changing parameter etc
   // Initial draw of windows
   app->drawMainWin();
   app->drawPromptWin();
@@ -54,9 +50,6 @@ int main() {
   std::vector<Repository> repositories = {};
 
   // Add data for the list (in MainWin) and draw it
-
-  // TODO: handle if the collection has no repositories (on init)
-  // for now just pass one empty repo as a quick fix
 
   // TODO: the collection should not be handled here, it should be passed once
   // and then handled by the app
@@ -105,11 +98,6 @@ int main() {
         app->nextPrompt();
         break;
       default:
-        // TODO: allow better typing, meaning show cursor, let user position it
-        // to remove spcific parts, maybe even short hands (C-W) to delete words
-        // etc etc. Things that I would consider basic in this part if
-        // printable, append to the user input
-        // also stuff like copy&paste
         if (isprint(keyPress)) {
           app->pushKey(keyPress);
           app->typeInPrompt();

@@ -15,9 +15,6 @@ App *App::getInstance() {
 App::~App() { endwin(); }
 
 App::App() {
-  // TODO: loading animation when waiting for curl
-  // TODO: use different mode so that it is nonblocking (halfdelay/timeout)
-  // might be needed later on when getting http responses
   initscr();  // init ncurses
   noecho();   // do not echo the button press
   cbreak();   // set mode
@@ -75,7 +72,6 @@ void App::drawMainWinList(ResourceCollection &collection) {
     return;
   }
 
-  // TODO allow multiple filter words (maybe indicated by SPACE)
   std::string filter = this->userInput;
 
   werase(this->mainWinField);
@@ -96,11 +92,6 @@ void App::drawMainWinList(ResourceCollection &collection) {
   int offset = (selectedIndex + 1) - maxHeight;
   if (offset < 0) offset = 0;
 
-  // TODO: instead of offset, position highlight in center on scroll
-  // TODO: add good fuzzyfind implementation
-  // TODO: combine filtering and showing more closely together to make
-  // highlighting easier but not as it is now (merged together) but not as it is
-  // now (merged together)
   int row = 0;
   for (auto const &resource : filteredResources) {
     if (row == selectedIndex) wattron(this->mainWinField, A_REVERSE);
