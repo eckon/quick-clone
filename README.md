@@ -39,9 +39,9 @@ It uses multiple dependencies (jq, fzf, etc), but might be a better option for o
 
 # Dependencies
 
-- ncurses
-- libcurl
-- nlohmann/json
+- ncurses e.g. `apt install libncurses5-dev libncursesw5-dev`
+- libcurl e.g. `apt install libcurl4-openssl-dev`
+- nlohmann/json e.g. `apt install nlohmann-json3-dev`
 
 
 ## Commands for compilation etc.
