@@ -240,14 +240,14 @@ void App::previousPrompt() {
 void App::nextPrompt() {
   switch (this->selectedPrompt) {
       // switch from query to prompt
-    case 0:
+    case App::Prompt::Query:
       this->selectedPrompt = App::Prompt::Filter;
       this->queryString = this->userInput.c_str();
       this->userInput = this->filterString.c_str();
       break;
 
       // switch from prompt to query
-    case 1:
+    case App::Prompt::Filter:
       this->selectedPrompt = App::Prompt::Query;
       this->filterString = this->userInput.c_str();
       this->userInput = this->queryString.c_str();
