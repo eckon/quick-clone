@@ -43,11 +43,13 @@ std::vector<Repository> getRepoResources(std::string searchValue) {
 
     // TODO: get more output for error
     if (res != CURLE_OK)
-      throw "Could not get url resource, code: " + std::to_string(res);
+      throw std::string("Could not get url resource, code: ") +
+          std::to_string(res);
 
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
     if (httpCode != 200)
-      throw "HTTP response was not 200 - got: " + std::to_string(httpCode);
+      throw std::string("HTTP response was not 200 - got: ") +
+          std::to_string(httpCode);
 
     curl_easy_cleanup(curl);
 
