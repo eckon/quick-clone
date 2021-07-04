@@ -285,10 +285,8 @@ void App::nextItem() { this->collection.next(); }
 void App::previousItem() { this->collection.previous(); }
 
 Repository App::getSelectedRepository() {
-  bool noItemSelected = this->collection.selected == -1;
   bool emptyCollection = this->collection.resources.size() <= 0;
-  if (noItemSelected || emptyCollection)
-    throw std::string("No Repository was selected");
+  if (emptyCollection) throw std::string("No Repository was selected");
 
   Repository selectedResource =
       this->collection.resources[this->collection.selected].repository;
