@@ -39,10 +39,7 @@ int main() {
         handlePromptSpecificKeyPress(keyPress);
         break;
       default:
-        if (isprint(keyPress)) {
-          app->pushKey(keyPress);
-          app->typeInPrompt();
-        }
+        if (isprint(keyPress)) app->pushKey(keyPress);
     }
 
     app->drawMainWinList();

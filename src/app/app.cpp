@@ -60,6 +60,7 @@ void App::pushKey(int key) {
   if (promptWidth <= (int)this->userInput.length() + 1) return;
 
   this->userInput.push_back(key);
+  this->typeInPrompt();
 }
 
 void App::drawMainWinList() {
@@ -249,7 +250,12 @@ void App::nextPrompt() {
 
 void App::requestResources() {
   // on enter if in query -> request new data from api
-  this->drawModal("Loading with query: " + this->userInput);
+  if (this->userInput.empty()) {
+    this->drawModal("Loading Repositories with newest Activity");
+  } else {
+    this->drawModal("Loading with Respositories with query: " +
+                    this->userInput);
+  }
 
   ResourceCollection collection;
   try {
@@ -257,7 +263,7 @@ void App::requestResources() {
 
     if (repositories.empty()) {
       this->drawModal("Search query \"" + this->userInput +
-                      "\" resulted in no hits.");
+                      "\" resulted in no hits");
       this->collection = collection;
       return;
     }
@@ -286,7 +292,7 @@ Repository App::getSelectedRepository() {
   bool noItemSelected = this->collection.selected == -1;
   bool emptyCollection = this->collection.resources.size() <= 0;
   if (noItemSelected || emptyCollection)
-    throw std::string("No Repository was selected.");
+    throw std::string("No Repository was selected");
 
   Repository selectedResource =
       this->collection.resources[this->collection.selected].repository;
