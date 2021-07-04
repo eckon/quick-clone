@@ -4,41 +4,8 @@
 #include <string>
 
 #include "app/app.h"
-#include "data/api.h"
 #include "data/repository.h"
 #include "data/resource.h"
-
-ResourceCollection TMPrequestNewData(ResourceCollection collection) {
-  App *app = App::getInstance();
-  // on enter if in query -> request new data from api
-  auto userInput = app->TMPgetUserInput();
-  app->drawModal("Loading with query: " + userInput);
-
-  std::vector<Repository> repositories = {};
-  try {
-    repositories = getRepoResources(userInput);
-
-    if (repositories.empty()) {
-      app->drawModal("Search query \"" + userInput + "\" resulted in no hits.");
-      return ResourceCollection({});
-    }
-
-    // just overwrite the collection with the new data
-    collection = ResourceCollection(repositories);
-    app->drawMainWinList(collection);
-
-    // QoL: go to the filter prompt
-    app->nextPrompt();
-  } catch (std::string error) {
-    // simple error modal, with inf loop (because we are non blocking)
-    app->drawModal(error);
-    app->getKeyPress();
-    delete app;
-    std::exit(1);
-  }
-
-  return collection;
-}
 
 int main() {
   App *app = App::getInstance();
@@ -64,14 +31,15 @@ int main() {
     keyPress = app->getKeyPress();
 
     // Terminate on ENTER
+    // TODO: handle key presses inside the app
     if (keyPress == 10) {
-      // TODO: totally overhaul this, needs to be in app or other classes
-      App::Prompt prompt = app->TMPgetSelectedPrompt();
+      App::Prompt prompt = app->getSelectedPrompt();
       // if filter, break and continue the program -> clone the selected entry
       if (prompt == App::Prompt::Filter) break;
 
       if (prompt == App::Prompt::Query) {
-        collection = TMPrequestNewData(collection);
+        // TODO: totally overhaul this, needs to be in app or other classes
+        collection = app->requestResources();
       }
     }
 

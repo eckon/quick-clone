@@ -1,5 +1,7 @@
 #include "app.h"
 
+#include "../data/api.h"
+
 #define COLOR_HIGHLIGHT 1
 #define COLOR_MODAL_BORDER 2
 
@@ -220,7 +222,7 @@ void App::drawModal(std::string message) {
   wrefresh(this->modalWinField);
 }
 
-App::Prompt App::TMPgetSelectedPrompt() { return this->selectedPrompt; }
+App::Prompt App::getSelectedPrompt() { return this->selectedPrompt; }
 std::string App::TMPgetUserInput() { return this->userInput; }
 
 void App::previousPrompt() {
@@ -249,4 +251,36 @@ void App::nextPrompt() {
   this->drawPromptWin();
   this->typeInPrompt();
   wrefresh(this->promptWinField);
+}
+
+ResourceCollection App::requestResources() {
+  // on enter if in query -> request new data from api
+  this->drawModal("Loading with query: " + this->userInput);
+
+  std::vector<Repository> repositories = {};
+  ResourceCollection collection(repositories);
+  try {
+    repositories = getRepoResources(this->userInput);
+
+    if (repositories.empty()) {
+      this->drawModal("Search query \"" + this->userInput +
+                      "\" resulted in no hits.");
+      return ResourceCollection({});
+    }
+
+    // just overwrite the collection with the new data
+    collection = ResourceCollection(repositories);
+    this->drawMainWinList(collection);
+
+    // QoL: go to the filter prompt
+    this->nextPrompt();
+  } catch (std::string error) {
+    // simple error modal, with inf loop (because we are non blocking)
+    this->drawModal(error);
+    this->getKeyPress();
+    delete this;
+    std::exit(1);
+  }
+
+  return collection;
 }

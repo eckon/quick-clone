@@ -46,8 +46,9 @@ class App {
   void pushKey(int);
   void nextPrompt();
   void previousPrompt();
+  ResourceCollection requestResources();
 
-  App::Prompt TMPgetSelectedPrompt();
+  App::Prompt getSelectedPrompt();
   std::string TMPgetUserInput();
 };
 
