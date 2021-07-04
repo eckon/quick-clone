@@ -32,7 +32,7 @@ App::App() {
   init_pair(COLOR_HIGHLIGHT, COLOR_BLUE, COLOR_BLACK);
   init_pair(COLOR_MODAL_BORDER, COLOR_RED, COLOR_BLACK);
 
-  this->selectedPrompt = App::Prompt::Query;
+  this->selectedPrompt = Prompt::Query;
 
   // prepare prompt for user input
   this->userInput = "";
@@ -62,7 +62,7 @@ void App::drawMainWinList(ResourceCollection &collection) {
 
   // TODO: do this differently, like this selection is still changeable
   // QUICKFIX: if query, only print collection, nothing else
-  if (this->selectedPrompt == App::Prompt::Query) {
+  if (this->selectedPrompt == Prompt::Query) {
     int row = 0;
     for (auto const &resource : collection.resources) {
       mvwprintw(this->mainWinField, row, 0,
@@ -154,12 +154,12 @@ void App::drawPromptWin() {
   box(this->promptWinBorder, 0, 0);
 
   // Add highlight to prompt title
-  if (this->selectedPrompt == App::Prompt::Query)
+  if (this->selectedPrompt == Prompt::Query)
     wattron(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
   mvwprintw(this->promptWinBorder, 0, 1, "Query");
   wattroff(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
 
-  if (this->selectedPrompt == App::Prompt::Filter)
+  if (this->selectedPrompt == Prompt::Filter)
     wattron(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
   mvwprintw(this->promptWinBorder, 0, 7, "Filter");
   wattroff(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
@@ -222,7 +222,7 @@ void App::drawModal(std::string message) {
   wrefresh(this->modalWinField);
 }
 
-App::Prompt App::getSelectedPrompt() { return this->selectedPrompt; }
+Prompt App::getSelectedPrompt() { return this->selectedPrompt; }
 std::string App::TMPgetUserInput() { return this->userInput; }
 
 void App::previousPrompt() {
@@ -233,15 +233,15 @@ void App::previousPrompt() {
 void App::nextPrompt() {
   switch (this->selectedPrompt) {
       // switch from query to prompt
-    case App::Prompt::Query:
-      this->selectedPrompt = App::Prompt::Filter;
+    case Prompt::Query:
+      this->selectedPrompt = Prompt::Filter;
       this->queryString = this->userInput.c_str();
       this->userInput = this->filterString.c_str();
       break;
 
       // switch from prompt to query
-    case App::Prompt::Filter:
-      this->selectedPrompt = App::Prompt::Query;
+    case Prompt::Filter:
+      this->selectedPrompt = Prompt::Query;
       this->filterString = this->userInput.c_str();
       this->userInput = this->queryString.c_str();
       break;

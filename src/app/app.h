@@ -8,6 +8,7 @@
 
 #include "../data/repository.h"
 #include "../data/resource.h"
+#include "prompt.h"
 
 // Singleton pattern for easy access to the ui part of the app
 class App {
@@ -27,11 +28,10 @@ class App {
   std::string filterString;
   std::string queryString;
 
+  Prompt selectedPrompt;
+
  public:
   ~App();
-
-  enum Prompt { Query, Filter };
-  App::Prompt selectedPrompt;
 
   static App *getInstance();
 
@@ -48,7 +48,7 @@ class App {
   void previousPrompt();
   ResourceCollection requestResources();
 
-  App::Prompt getSelectedPrompt();
+  Prompt getSelectedPrompt();
   std::string TMPgetUserInput();
 };
 

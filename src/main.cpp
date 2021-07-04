@@ -4,6 +4,7 @@
 #include <string>
 
 #include "app/app.h"
+#include "app/prompt.h"
 #include "data/repository.h"
 #include "data/resource.h"
 
@@ -33,11 +34,11 @@ int main() {
     // Terminate on ENTER
     // TODO: handle key presses inside the app
     if (keyPress == 10) {
-      App::Prompt prompt = app->getSelectedPrompt();
+      Prompt prompt = app->getSelectedPrompt();
       // if filter, break and continue the program -> clone the selected entry
-      if (prompt == App::Prompt::Filter) break;
+      if (prompt == Prompt::Filter) break;
 
-      if (prompt == App::Prompt::Query) {
+      if (prompt == Prompt::Query) {
         // TODO: totally overhaul this, needs to be in app or other classes
         collection = app->requestResources();
       }
