@@ -37,21 +37,20 @@ class App {
 
   static App *getInstance();
 
-  void drawMainWinList(ResourceCollection &collection);
+  void drawMainWinList();
   void deleteInPrompt();
   void typeInPrompt();
   void drawPromptWin();
   void drawMainWin();
   void drawModal(std::string message);
-  void stop();
   int getKeyPress();
   void pushKey(int);
   void nextPrompt();
   void previousPrompt();
-  ResourceCollection requestResources();
+  void requestResources();
 
   Prompt getSelectedPrompt();
-  std::string TMPgetUserInput();
+  ResourceCollection *TMPgetCollection();
 };
 
 #endif

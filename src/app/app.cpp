@@ -58,14 +58,14 @@ void App::pushKey(int key) {
   this->userInput.push_back(key);
 }
 
-void App::drawMainWinList(ResourceCollection &collection) {
-  if (collection.resources.size() <= 0) return;
+void App::drawMainWinList() {
+  if (this->collection.resources.size() <= 0) return;
 
   // TODO: do this differently, like this selection is still changeable
   // QUICKFIX: if query, only print collection, nothing else
   if (this->selectedPrompt == Prompt::Query) {
     int row = 0;
-    for (auto const &resource : collection.resources) {
+    for (auto const &resource : this->collection.resources) {
       mvwprintw(this->mainWinField, row, 0,
                 resource.repository.ssh_url_to_repo.c_str());
       row++;
@@ -79,15 +79,16 @@ void App::drawMainWinList(ResourceCollection &collection) {
 
   werase(this->mainWinField);
 
-  auto filteredResources = collection.getFilteredResources(filter);
+  auto filteredResources = this->collection.getFilteredResources(filter);
 
   // check if the selected element is hidden, if so, reset selected
-  if (collection.resources[collection.selected].hidden) {
-    bool previousExists = !collection.previous();
-    if (previousExists) collection.next();
+  if (this->collection.resources[this->collection.selected].hidden) {
+    bool previousExists = !this->collection.previous();
+    if (previousExists) this->collection.next();
   }
 
-  int selectedIndex = collection.getFilteredSelectedIndex(filteredResources);
+  int selectedIndex =
+      this->collection.getFilteredSelectedIndex(filteredResources);
 
   // calculate how far the view needs to be shifted, to have selection always
   // in focus this currently results in the cursor sticking to the bottom
@@ -224,7 +225,6 @@ void App::drawModal(std::string message) {
 }
 
 Prompt App::getSelectedPrompt() { return this->selectedPrompt; }
-std::string App::TMPgetUserInput() { return this->userInput; }
 
 void App::previousPrompt() {
   // have only 2 prompts, so next/previous are the same
@@ -254,7 +254,7 @@ void App::nextPrompt() {
   wrefresh(this->promptWinField);
 }
 
-ResourceCollection App::requestResources() {
+void App::requestResources() {
   // on enter if in query -> request new data from api
   this->drawModal("Loading with query: " + this->userInput);
 
@@ -265,12 +265,13 @@ ResourceCollection App::requestResources() {
     if (repositories.empty()) {
       this->drawModal("Search query \"" + this->userInput +
                       "\" resulted in no hits.");
-      return collection;
+      this->collection = collection;
+      return;
     }
 
     // just overwrite the collection with the new data
-    collection = ResourceCollection(repositories);
-    this->drawMainWinList(collection);
+    this->collection = ResourceCollection(repositories);
+    this->drawMainWinList();
 
     // QoL: go to the filter prompt
     this->nextPrompt();
@@ -282,5 +283,7 @@ ResourceCollection App::requestResources() {
     std::exit(1);
   }
 
-  return collection;
+  return;
 }
+
+ResourceCollection *App::TMPgetCollection() { return &this->collection; }

@@ -5,8 +5,6 @@
 
 #include "app/app.h"
 #include "app/prompt.h"
-#include "data/repository.h"
-#include "data/resource.h"
 
 int main() {
   App *app = App::getInstance();
@@ -15,14 +13,8 @@ int main() {
   app->drawMainWin();
   app->drawPromptWin();
 
-  std::vector<Repository> repositories = {};
-
   // Add data for the list (in MainWin) and draw it
-
-  // TODO: the collection should not be handled here, it should be passed once
-  // and then handled by the app
-  ResourceCollection collection(repositories);
-  app->drawMainWinList(collection);
+  app->drawMainWinList();
 
   int keyPress;
   while (true) {
@@ -39,17 +31,16 @@ int main() {
       if (prompt == Prompt::Filter) break;
 
       if (prompt == Prompt::Query) {
-        // TODO: totally overhaul this, needs to be in app or other classes
-        collection = app->requestResources();
+        app->requestResources();
       }
     }
 
     switch (keyPress) {
       case KEY_UP:
-        collection.previous();
+        app->TMPgetCollection()->previous();
         break;
       case KEY_DOWN:
-        collection.next();
+        app->TMPgetCollection()->next();
         break;
       case KEY_BACKSPACE:
         app->deleteInPrompt();
@@ -73,21 +64,26 @@ int main() {
         }
     }
 
-    app->drawMainWinList(collection);
+    app->drawMainWinList();
   }
 
-  delete app;
-
-  if (collection.selected == -1 || collection.resources.size() <= 0) {
+  // TODO: this whole part should not be done here, refactor later on
+  if (app->TMPgetCollection()->selected == -1 ||
+      app->TMPgetCollection()->resources.size() <= 0) {
+    delete app;
     std::cout << "Nothing selected, quitting quick-clone" << std::endl;
     return 0;
   }
 
   // Final process -> get selected value and clone the repo in current directory
-  Repository selectedRepository =
-      collection.resources[collection.selected].repository;
+  std::string selectedRepositoryPath =
+      app->TMPgetCollection()
+          ->resources[app->TMPgetCollection()->selected]
+          .repository.ssh_url_to_repo.c_str();
 
-  std::string command = "git clone " + selectedRepository.ssh_url_to_repo;
+  delete app;
+
+  std::string command = "git clone " + selectedRepositoryPath;
   std::system(command.c_str());
 
   return 0;
