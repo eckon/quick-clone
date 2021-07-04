@@ -37,20 +37,26 @@ class App {
 
   static App *getInstance();
 
+  void drawMainWin();
   void drawMainWinList();
+  void drawPromptWin();
+  void drawModal(std::string message);
+
+  int getKeyPress();
+  void pushKey(int key);
   void deleteInPrompt();
   void typeInPrompt();
-  void drawPromptWin();
-  void drawMainWin();
-  void drawModal(std::string message);
-  int getKeyPress();
-  void pushKey(int);
+
   void nextPrompt();
   void previousPrompt();
+
+  void nextItem();
+  void previousItem();
+
   void requestResources();
 
   Prompt getSelectedPrompt();
-  ResourceCollection *TMPgetCollection();
+  Repository getSelectedRepository();
 };
 
 #endif

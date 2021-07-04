@@ -1,10 +1,7 @@
-#include <ncurses.h>
-
 #include <iostream>
 #include <string>
 
 #include "app/app.h"
-#include "app/prompt.h"
 
 int main() {
   App *app = App::getInstance();
@@ -13,17 +10,17 @@ int main() {
   app->drawPromptWin();
   app->drawMainWinList();
 
-  int keyPress;
   bool running = true;
+
   while (running) {
-    keyPress = app->getKeyPress();
+    int keyPress = app->getKeyPress();
 
     switch (keyPress) {
       case KEY_UP:
-        app->TMPgetCollection()->previous();
+        app->previousItem();
         break;
       case KEY_DOWN:
-        app->TMPgetCollection()->next();
+        app->nextItem();
         break;
       case KEY_BACKSPACE:
         app->deleteInPrompt();
@@ -62,21 +59,20 @@ int main() {
     app->drawMainWinList();
   }
 
-  // TODO: this whole part should not be done here, refactor later on
-  if (app->TMPgetCollection()->selected == -1 ||
-      app->TMPgetCollection()->resources.size() <= 0) {
+  Resource selectedResource;
+  try {
+    selectedResource = app->getSelectedRepository();
+  } catch (std::string error) {
     delete app;
-    std::cout << "Nothing selected, quitting quick-clone" << std::endl;
+    std::cout << error << std::endl;
     return 0;
   }
 
+  delete app;
+
   // Final process -> get selected value and clone the repo in current directory
   std::string selectedRepositoryPath =
-      app->TMPgetCollection()
-          ->resources[app->TMPgetCollection()->selected]
-          .repository.ssh_url_to_repo.c_str();
-
-  delete app;
+      selectedResource.repository.ssh_url_to_repo;
 
   std::string command = "git clone " + selectedRepositoryPath;
   std::system(command.c_str());
