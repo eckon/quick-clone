@@ -47,6 +47,10 @@ int App::getKeyPress() {
   // always move the cursor to the prompt so we can show the cursor to the user
   int cursorXPosition = this->userInput.length();
   wmove(this->promptWinField, 0, cursorXPosition);
+
+  // TODO: figure out why the wgetch() is needed for my screen to be rendered
+  // I want to be able to draw without a sideeffect
+  // meaning without while loop i want to see the application
   return wgetch(this->promptWinField);
 }
 

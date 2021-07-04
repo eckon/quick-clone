@@ -9,31 +9,14 @@
 int main() {
   App *app = App::getInstance();
 
-  // Initial draw of windows
   app->drawMainWin();
   app->drawPromptWin();
-
-  // Add data for the list (in MainWin) and draw it
   app->drawMainWinList();
 
   int keyPress;
-  while (true) {
-    // TODO: figure out why the wgetch() is needed for my screen to be rendered
-    // I want to be able to draw without a sideeffect
-    // meaning without while loop i want to see the application
+  bool running = true;
+  while (running) {
     keyPress = app->getKeyPress();
-
-    // Terminate on ENTER
-    // TODO: handle key presses inside the app
-    if (keyPress == 10) {
-      Prompt prompt = app->getSelectedPrompt();
-      // if filter, break and continue the program -> clone the selected entry
-      if (prompt == Prompt::Filter) break;
-
-      if (prompt == Prompt::Query) {
-        app->requestResources();
-      }
-    }
 
     switch (keyPress) {
       case KEY_UP:
@@ -57,6 +40,18 @@ int main() {
       case KEY_RIGHT:
         app->nextPrompt();
         break;
+      case 10: {
+        // On ENTER
+        switch (app->getSelectedPrompt()) {
+          case Prompt::Filter:
+            // exit infinite loop to execute git clone
+            running = false;
+            break;
+          case Prompt::Query:
+            app->requestResources();
+            break;
+        }
+      }; break;
       default:
         if (isprint(keyPress)) {
           app->pushKey(keyPress);
