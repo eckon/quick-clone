@@ -1,4 +1,4 @@
-# TODOS
+# Features
 
 ## General
 - Draw additional information of highlighted entry on screen
