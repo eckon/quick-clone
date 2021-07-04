@@ -89,7 +89,6 @@ void App::drawMainWinList() {
   int row = 0;
   for (auto const &resource : filteredResources) {
     // Quickfix: Do not print anything in Query Prompt
-    // TODO: Remove this when printing/highlighting etc is split or similar
     if (this->selectedPrompt == Prompt::Query) continue;
 
     if (row == selectedIndex) wattron(this->mainWinField, A_REVERSE);
@@ -98,11 +97,11 @@ void App::drawMainWinList() {
     int maxColumns = (int)resource.repository.ssh_url_to_repo.size();
     for (int column = 0; column < maxColumns; column++) {
       // highlight dependend on the filtered match ranges
-      // TODO: use all of the elements in the list, not just the first one
       if (!resource.filterMatchRanges.empty()) {
-        if (resource.filterMatchRanges[0].first <= column &&
-            resource.filterMatchRanges[0].second >= column) {
-          wattron(this->mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
+        for (auto const filterRange : resource.filterMatchRanges) {
+          // activate highlight, as long as char is inside of any range
+          if (filterRange.first <= column && filterRange.second >= column)
+            wattron(this->mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
         }
       }
 
