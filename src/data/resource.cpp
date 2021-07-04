@@ -1,5 +1,11 @@
 #include "resource.h"
 
+Resource::Resource() {
+  this->repository = Repository();
+  this->hidden = false;
+  this->index = 0;
+}
+
 Resource::Resource(Repository repository) {
   this->repository = repository;
   this->hidden = false;
