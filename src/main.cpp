@@ -3,6 +3,10 @@
 
 #include "app/app.h"
 
+int running = true;
+
+void handlePromptSpecificKeyPress(int keyPress);
+
 int main() {
   App *app = App::getInstance();
 
@@ -10,18 +14,10 @@ int main() {
   app->drawPromptWin();
   app->drawMainWinList();
 
-  bool running = true;
-
   while (running) {
     int keyPress = app->getKeyPress();
 
     switch (keyPress) {
-      case KEY_UP:
-        app->previousItem();
-        break;
-      case KEY_DOWN:
-        app->nextItem();
-        break;
       case KEY_BACKSPACE:
         app->deleteInPrompt();
         break;
@@ -37,18 +33,11 @@ int main() {
       case KEY_RIGHT:
         app->nextPrompt();
         break;
-      case 10: {
-        // On ENTER
-        switch (app->getSelectedPrompt()) {
-          case Prompt::Filter:
-            // exit infinite loop to execute git clone
-            running = false;
-            break;
-          case Prompt::Query:
-            app->requestResources();
-            break;
-        }
-      }; break;
+      case KEY_UP:
+      case KEY_DOWN:
+      case 10:  // On ENTER
+        handlePromptSpecificKeyPress(keyPress);
+        break;
       default:
         if (isprint(keyPress)) {
           app->pushKey(keyPress);
@@ -78,4 +67,35 @@ int main() {
   std::system(command.c_str());
 
   return 0;
+}
+
+void handlePromptSpecificKeyPress(int keyPress) {
+  App *app = App::getInstance();
+  Prompt selectedPrompt = app->getSelectedPrompt();
+
+  if (selectedPrompt == Prompt::Filter) {
+    switch (keyPress) {
+      case KEY_UP:
+        app->previousItem();
+        break;
+      case KEY_DOWN:
+        app->nextItem();
+        break;
+      case 10:  // On ENTER
+        // exit infinite loop to execute git clone
+        running = false;
+        break;
+    }
+  }
+
+  if (selectedPrompt == Prompt::Query) {
+    switch (keyPress) {
+      case KEY_UP:
+      case KEY_DOWN:
+        break;
+      case 10:  // On ENTER
+        app->requestResources();
+        break;
+    }
+  }
 }

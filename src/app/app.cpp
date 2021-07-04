@@ -65,24 +65,9 @@ void App::pushKey(int key) {
 void App::drawMainWinList() {
   if (this->collection.resources.size() <= 0) return;
 
-  // TODO: do this differently, like this selection is still changeable
-  // QUICKFIX: if query, only print collection, nothing else
-  if (this->selectedPrompt == Prompt::Query) {
-    int row = 0;
-    for (auto const &resource : this->collection.resources) {
-      mvwprintw(this->mainWinField, row, 0,
-                resource.repository.ssh_url_to_repo.c_str());
-      row++;
-    }
-
-    wrefresh(this->mainWinField);
-    return;
-  }
-
-  std::string filter = this->userInput;
-
   werase(this->mainWinField);
 
+  std::string filter = this->userInput;
   auto filteredResources = this->collection.getFilteredResources(filter);
 
   // check if the selected element is hidden, if so, reset selected
@@ -102,6 +87,10 @@ void App::drawMainWinList() {
 
   int row = 0;
   for (auto const &resource : filteredResources) {
+    // Quickfix: Do not print anything in Query Prompt
+    // TODO: Remove this when printing/highlighting etc is split or similar
+    if (this->selectedPrompt == Prompt::Query) continue;
+
     if (row == selectedIndex) wattron(this->mainWinField, A_REVERSE);
 
     // get the position of the substring to highlight its length
