@@ -94,23 +94,18 @@ void App::drawMainWinList() {
 
     if (row == selectedIndex) wattron(this->mainWinField, A_REVERSE);
 
-    // get the position of the substring to highlight its length
-    int highlightPosition = resource.repository.ssh_url_to_repo.find(filter);
-    bool hasFilter = filter.size() > 0;
-
-    // instead of printing the whole line with "mvwprintw"
-    // I use the char wise method to be able to highlight individual chars
+    // print char wise, to handle highlight of filter match chars
     int maxColumns = (int)resource.repository.ssh_url_to_repo.size();
     for (int column = 0; column < maxColumns; column++) {
-      // activate highlight starting when we are at the found position
-      if (hasFilter && column >= highlightPosition) {
-        wattron(this->mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
+      // highlight dependend on the filtered match ranges
+      // TODO: use all of the elements in the list, not just the first one
+      if (!resource.filterMatchRanges.empty()) {
+        if (resource.filterMatchRanges[0].first <= column &&
+            resource.filterMatchRanges[0].second >= column) {
+          wattron(this->mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
+        }
       }
 
-      // deactivate highlight if we shot over the last position
-      if (column >= highlightPosition + (int)filter.size()) {
-        wattroff(this->mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
-      }
       mvwaddch(this->mainWinField, row - offset, column,
                resource.repository.ssh_url_to_repo[column]);
       wattroff(this->mainWinField, COLOR_PAIR(COLOR_HIGHLIGHT));
@@ -286,6 +281,7 @@ void App::requestResources() {
 }
 
 void App::nextItem() { this->collection.next(); }
+
 void App::previousItem() { this->collection.previous(); }
 
 Repository App::getSelectedRepository() {

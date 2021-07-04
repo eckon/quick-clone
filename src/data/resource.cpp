@@ -4,12 +4,14 @@ Resource::Resource() {
   this->repository = Repository();
   this->hidden = false;
   this->index = 0;
+  this->filterMatchRanges = {};
 }
 
 Resource::Resource(Repository repository) {
   this->repository = repository;
   this->hidden = false;
   this->index = 0;
+  this->filterMatchRanges = {};
 }
 
 ResourceCollection::ResourceCollection() {
@@ -48,9 +50,16 @@ std::vector<Resource> ResourceCollection::getFilteredResources(
 void ResourceCollection::applyFilter(std::string filter) {
   // set hidden flag of resource, when it does not fit filter
   for (auto &resource : this->resources) {
-    bool hasSubString =
-        resource.repository.ssh_url_to_repo.find(filter) != std::string::npos;
+    resource.filterMatchRanges = {};
+    int position = resource.repository.ssh_url_to_repo.find(filter);
+    bool hasSubString = position != (int)std::string::npos;
     resource.hidden = !hasSubString;
+
+    if (hasSubString) {
+      // TODO: make it more general, so using filter.size will probably not work
+      resource.filterMatchRanges.push_back(
+          std::make_pair(position, position + filter.size() - 1));
+    }
   }
 }
 

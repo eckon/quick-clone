@@ -11,6 +11,9 @@ class Resource {
   bool hidden;
   int index;
 
+  // the pair shows the beginning and the end of matching pairs
+  std::vector<std::pair<int, int>> filterMatchRanges;
+
   Resource();
   Resource(Repository repository);
 };
