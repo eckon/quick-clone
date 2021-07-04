@@ -28,6 +28,8 @@ class App {
   std::string filterString;
   std::string queryString;
 
+  ResourceCollection collection;
+
   Prompt selectedPrompt;
 
  public:

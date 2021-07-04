@@ -23,6 +23,7 @@ class ResourceCollection {
   int selected;
 
   ResourceCollection(std::vector<Repository> repositories);
+  ResourceCollection();
 
   bool next();
   bool previous();

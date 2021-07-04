@@ -6,6 +6,13 @@ Resource::Resource(Repository repository) {
   this->index = 0;
 }
 
+ResourceCollection::ResourceCollection() {
+  std::vector<Resource> resources = {};
+  this->resources = resources;
+  // Set to -1 to easily check if something was selected
+  this->selected = -1;
+}
+
 ResourceCollection::ResourceCollection(std::vector<Repository> repositories) {
   std::vector<Resource> resources = {};
   int index = 0;

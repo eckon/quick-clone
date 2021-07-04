@@ -34,6 +34,7 @@ App::App() {
 
   this->selectedPrompt = Prompt::Query;
 
+  this->collection = ResourceCollection();
   // prepare prompt for user input
   this->userInput = "";
 
@@ -257,15 +258,14 @@ ResourceCollection App::requestResources() {
   // on enter if in query -> request new data from api
   this->drawModal("Loading with query: " + this->userInput);
 
-  std::vector<Repository> repositories = {};
-  ResourceCollection collection(repositories);
+  ResourceCollection collection;
   try {
-    repositories = getRepoResources(this->userInput);
+    std::vector<Repository> repositories = getRepoResources(this->userInput);
 
     if (repositories.empty()) {
       this->drawModal("Search query \"" + this->userInput +
                       "\" resulted in no hits.");
-      return ResourceCollection({});
+      return collection;
     }
 
     // just overwrite the collection with the new data
