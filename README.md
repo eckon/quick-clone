@@ -29,6 +29,19 @@ For now these are used by having them as ENV-Variables (similar to the $PATH etc
 - GITLAB_ACCESS_TOKEN="YOUR-TOKEN"
 - GITLAB_PROJECTS_URL="YOUR-REPOSITORY-API-ENDPOINT"
 
+IN-PROGRESS
+
+Add config file in "some path that i need to decide on" with a json array
+```json
+[
+  {
+    "name": "This is visible in the Application",
+    "access_token": "",
+    "url": "",
+  }
+]
+```
+
 
 ## Sidenote
 

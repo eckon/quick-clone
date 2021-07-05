@@ -2,6 +2,7 @@
 
 #include <curl/curl.h>
 
+#include <fstream>
 #include <nlohmann/json.hpp>
 
 static size_t writeCallback(void *contents, size_t size, size_t nmemb,
@@ -18,8 +19,18 @@ std::vector<Repository> getRepoResources(std::string searchValue) {
   std::vector<Repository> repositories;
   long httpCode = 0;
 
-  std::string gitlabAccessToken = std::getenv("GITLAB_ACCESS_TOKEN");
-  std::string gitlabProjectsUrl = std::getenv("GITLAB_PROJECTS_URL");
+  std::string gitlabAccessToken;
+  std::string gitlabProjectsUrl;
+  std::ifstream file("variables.json");
+
+  auto json = nlohmann::json::parse(file);
+  for (auto &el : json.items()) {
+    auto val = el.value();
+
+    gitlabAccessToken = val["access_token"];
+    gitlabProjectsUrl = val["url"];
+  }
+  file.close();
 
   std::string searchParameter = "search=" + searchValue;
   std::string resultAmount = "100";
