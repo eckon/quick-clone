@@ -5,6 +5,40 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 
+ApiConfig::ApiConfig() {
+  this->accessToken = "";
+  this->name = "";
+  this->url = "";
+}
+
+ApiConfig::ApiConfig(std::string name, std::string accessToken,
+                     std::string url) {
+  this->accessToken = accessToken;
+  this->name = name;
+  this->url = url;
+}
+
+ApiConfigCollection::ApiConfigCollection() {
+  std::vector<ApiConfig> configs = {};
+  this->apiConfigurations = configs;
+  this->selected = 0;
+}
+
+ApiConfigCollection TMPcreateConfigCollection() {
+  ApiConfigCollection configs = ApiConfigCollection();
+  std::ifstream file("variables.json");
+
+  auto json = nlohmann::json::parse(file);
+  for (auto &el : json.items()) {
+    auto val = el.value();
+    ApiConfig config = ApiConfig(val["name"], val["access_token"], val["url"]);
+    configs.apiConfigurations.push_back(config);
+  }
+  file.close();
+
+  return configs;
+}
+
 static size_t writeCallback(void *contents, size_t size, size_t nmemb,
                             void *userp) {
   ((std::string *)userp)->append((char *)contents, size * nmemb);
@@ -12,25 +46,16 @@ static size_t writeCallback(void *contents, size_t size, size_t nmemb,
 }
 
 // TODO: this or parts of it should be in the repo file
-std::vector<Repository> getRepoResources(std::string searchValue) {
+std::vector<Repository> getRepoResources(std::string searchValue,
+                                         ApiConfig config) {
   CURL *curl;
   CURLcode res;
   std::string readBuffer;
   std::vector<Repository> repositories;
   long httpCode = 0;
 
-  std::string gitlabAccessToken;
-  std::string gitlabProjectsUrl;
-  std::ifstream file("variables.json");
-
-  auto json = nlohmann::json::parse(file);
-  for (auto &el : json.items()) {
-    auto val = el.value();
-
-    gitlabAccessToken = val["access_token"];
-    gitlabProjectsUrl = val["url"];
-  }
-  file.close();
+  std::string gitlabAccessToken = config.accessToken;
+  std::string gitlabProjectsUrl = config.url;
 
   std::string searchParameter = "search=" + searchValue;
   std::string resultAmount = "100";

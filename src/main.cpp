@@ -88,7 +88,14 @@ void handlePromptSpecificKeyPress(int keyPress) {
   if (selectedPrompt == Prompt::Query) {
     switch (keyPress) {
       case KEY_UP:
+        if (app->TMPconfigs.selected <= 0) break;
+        app->TMPconfigs.selected--;
+        break;
       case KEY_DOWN:
+        if (app->TMPconfigs.selected + 1 >=
+            app->TMPconfigs.apiConfigurations.size())
+          break;
+        app->TMPconfigs.selected++;
         break;
       case 10:  // On ENTER
         app->requestResources();

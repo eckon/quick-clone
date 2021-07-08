@@ -6,6 +6,7 @@
 #include <list>
 #include <string>
 
+#include "../data/api.h"
 #include "../data/repository.h"
 #include "../data/resource.h"
 #include "prompt.h"
@@ -57,6 +58,8 @@ class App {
 
   Prompt getSelectedPrompt();
   Repository getSelectedRepository();
+
+  ApiConfigCollection TMPconfigs;
 };
 
 #endif

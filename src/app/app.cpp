@@ -1,5 +1,8 @@
 #include "app.h"
 
+#include <chrono>
+#include <thread>
+
 #include "../data/api.h"
 
 #define COLOR_HIGHLIGHT 1
@@ -41,6 +44,10 @@ App::App() {
   // save string of specific user input
   this->filterString = "";
   this->queryString = "";
+
+  // TODO: tmp this should be done somewhere else or differently
+  // currently like this to not create them every time
+  this->TMPconfigs = TMPcreateConfigCollection();
 }
 
 int App::getKeyPress() {
@@ -64,9 +71,26 @@ void App::pushKey(int key) {
 }
 
 void App::drawMainWinList() {
-  if (this->collection.resources.size() <= 0) return;
-
   werase(this->mainWinField);
+
+  // On query, only show the configs and let these be selectable
+  if (this->selectedPrompt == Prompt::Query) {
+    int row = 0;
+    for (auto const config : this->TMPconfigs.apiConfigurations) {
+      // highlight selected config
+      if (row == this->TMPconfigs.selected)
+        wattron(this->mainWinField, A_REVERSE);
+
+      mvwprintw(this->mainWinField, row, 0, config.name.c_str());
+      row++;
+
+      wattroff(this->mainWinField, A_REVERSE);
+    }
+    wrefresh(this->mainWinField);
+    return;
+  }
+
+  if (this->collection.resources.size() <= 0) return;
 
   std::string filter = this->userInput;
   auto filteredResources = this->collection.getFilteredResources(filter);
@@ -88,9 +112,6 @@ void App::drawMainWinList() {
 
   int row = 0;
   for (auto const &resource : filteredResources) {
-    // Quickfix: Do not print anything in Query Prompt
-    if (this->selectedPrompt == Prompt::Query) continue;
-
     if (row == selectedIndex) wattron(this->mainWinField, A_REVERSE);
 
     // print char wise, to handle highlight of filter match chars
@@ -112,6 +133,7 @@ void App::drawMainWinList() {
     wattroff(this->mainWinField, A_REVERSE);
     row++;
   }
+
   wrefresh(this->mainWinField);
 }
 
@@ -253,12 +275,18 @@ void App::requestResources() {
 
   ResourceCollection collection;
   try {
-    std::vector<Repository> repositories = getRepoResources(this->userInput);
+    std::vector<Repository> repositories = getRepoResources(
+        this->userInput,
+        this->TMPconfigs.apiConfigurations[this->TMPconfigs.selected]);
 
     if (repositories.empty()) {
       this->drawModal("Search query \"" + this->userInput +
                       "\" resulted in no hits");
       this->collection = collection;
+
+      // TODO: this should not be done by sleeping but maybe by making the
+      // modal priority and just hide it on keypress
+      std::this_thread::sleep_for(std::chrono::seconds(2));
       return;
     }
 
