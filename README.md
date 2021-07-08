@@ -7,37 +7,46 @@ Just add your gitlab config and be able to quickly clone any repository of that 
 
 # Usage
 
-Run the command `qc` with a search term of the repository (currently only the name of the git repository).
+Run the `qc` command. This will open up the interactive TUI.
+
+The first view (query) can be used to select a gitlab endpoint and to query that endpoint with a search parameter. On enter you will get the search results.
+
+The Search results are in the Filter tab and can be filtered by typing. On Enter the highlighted repository will be cloned and the program will be exited.
 
 
 ## Example
 
 ```sh
-# Results in a searchable buffer with all entries which include the word "quick"
-$ qc quick
+$ qc
 ```
 
 
 # Setup
 
-Currently there is no precompiled binaries, so to install it, the [dependencies](#dependencies) are needed.
+Currently there is no precompiled binaries, so to install it, the [dependencies](#dependencies) are needed. After that have a look into the compilation part (bottom).
 
 To be able to access a private repository, the app needs an endpoint and an access token which has read access.
 
-For now these are used by having them as ENV-Variables (similar to the $PATH etc.). Needed are:
-
-- GITLAB_ACCESS_TOKEN="YOUR-TOKEN"
-- GITLAB_PROJECTS_URL="YOUR-REPOSITORY-API-ENDPOINT"
-
-IN-PROGRESS
+An array structure is used, so that it is possible to have multiple gitlab endpoints.
 
 Add config file in "some path that i need to decide on" with a json array
+
+* Config every element is inside an array `[{...},{...},...]`
+  * name - Will be shown in the app to identify the selected enpoint
+  * access_token - Is needed to have access to the endpoint, needs at least read access
+  * url - URI to the gitlab endpoint
+
 ```json
 [
   {
-    "name": "This is visible in the Application",
-    "access_token": "",
-    "url": "",
+    "name": "Work",
+    "access_token": "123",
+    "url": "https://gitlab.my-work-site.com/api/v4/projects"
+  },
+  {
+    "name": "Home",
+    "access_token": "987",
+    "url": "https://gitlab.example.com/api/v4/projects"
   }
 ]
 ```
