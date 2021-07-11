@@ -1,41 +1,44 @@
 # Quick Clone
 
-Small cli tool to search and clone git repositories in one step.
+A Small cli tool to search and clone git repositories from the terminal (currently only Gitlab-v4).
 
-Just add your gitlab config and be able to quickly clone any repository of that endpoint, without having to search through a web ui.
+This tool was only tested on my machine, but I am open to improve it if people are interested.
+
+If it does not work and/or you want another quick solution, have a look at the [side-node](#side-note) for a bash script with most functionality.
 
 
 # Usage
 
-Run the `qc` command. This will open up the interactive TUI.
+Run the `qc` command. This will open up the interactive TUI (The [config file](#setup) needs to be added before first usage).
 
-The first view (query) can be used to select a gitlab endpoint and to query that endpoint with a search parameter. On enter you will get the search results.
-
-The Search results are in the Filter tab and can be filtered by typing. On Enter the highlighted repository will be cloned and the program will be exited.
-
-
-## Example
-
-```sh
-$ qc
-```
+Views
+* Query-Prompt (start position)
+  * Select between your different git endpoints with `UP/DOWN` (these were given by the config file)
+  * Type in the prompt to request repository name from highlighted endpoint
+  * Fire request on `ENTER`
+    * Nothing found -> continue with the Query
+    * Something found, automatic switch to Filter-Prompt
+* Filter-Prompt (`LEFT/RIGHT` let's you switch between the Prompts)
+  * Select the wanted repository with `UP/DOWN`
+  * Typing will allow basic filtering of the given list
+  * Terminate app and clone highlighted repository on `ENTER`
+  * Switch back to Query-Prompt with `LEFT/RIGHT`
 
 
 # Setup
 
-Currently there is no precompiled binaries, so to install it, the [dependencies](#dependencies) are needed. After that have a look into the compilation part (bottom).
+* Currently there is no pre-compiled binaries
+  * To install: have the needed [dependencies](#dependencies) and [compile](#commands) the tool on your machine
+* Add access token in Gitlab with (at least) Repository-read permissions
+  * Can be found in your personal settings under "Access Tokens"
+* Create config file at `~/.config/quick-clone/config.json` (_names etc. might change_)
+  * An array structure is used, for the purpose of having multiple Gitlab-endpoints
+  * Every element is an objcet inside the array `[{...}, {...}, ...]` with the following
+    * `name` - Will be shown in the app to identify the selected endpoint
+    * `access_token` - Is needed to have access to the endpoint, needs at least read access
+    * `url` - URI to the Gitlab endpoint
 
-To be able to access a private repository, the app needs an endpoint and an access token which has read access.
-
-An array structure is used, so that it is possible to have multiple gitlab endpoints.
-
-Add config file in "some path that i need to decide on" with a json array
-
-* Config every element is inside an array `[{...},{...},...]`
-  * name - Will be shown in the app to identify the selected enpoint
-  * access_token - Is needed to have access to the endpoint, needs at least read access
-  * url - URI to the gitlab endpoint
-
+Example
 ```json
 [
   {
@@ -52,11 +55,11 @@ Add config file in "some path that i need to decide on" with a json array
 ```
 
 
-## Sidenote
+## Side-note
 
-A bash like script that does a search & clone still better than this, can be found in my [dotfiles/custom-scripts](https://github.com/eckon/dotfiles/blob/master/custom-scripts/gitlab-search-and-clone.sh).
+The first version of this tool was a simple bash script, which uses different tools like `fzf`, `jq`, `awk`, `curl` and maybe others.
 
-It uses multiple dependencies (jq, fzf, etc), but might be a better option for others (until this projects progressed further).
+This should work on most machine that supports bash and the other tools and can be found in my [dotfiles](https://github.com/eckon/dotfiles/blob/master/custom-scripts/gitlab-search-and-clone.sh).
 
 
 # Dependencies
@@ -66,7 +69,7 @@ It uses multiple dependencies (jq, fzf, etc), but might be a better option for o
 - nlohmann/json e.g. `apt install nlohmann-json3-dev`
 
 
-## Commands for compilation etc.
+## Commands
 ```sh
 # generate Makefile in build/
 $ cmake -S . -B build/
