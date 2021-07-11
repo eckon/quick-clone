@@ -33,6 +33,8 @@ class App {
 
   Prompt selectedPrompt;
 
+  ApiConfigCollection apiConfigs;
+
  public:
   ~App();
 
@@ -59,7 +61,9 @@ class App {
   Prompt getSelectedPrompt();
   Repository getSelectedRepository();
 
-  ApiConfigCollection TMPconfigs;
+  void setApiConfigs(ApiConfigCollection configs);
+  void nextApiConfigItem();
+  void previousApiConfigItem();
 };
 
 #endif

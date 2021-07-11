@@ -10,6 +10,9 @@ void handlePromptSpecificKeyPress(int keyPress);
 int main() {
   App *app = App::getInstance();
 
+  ApiConfigCollection apiConfigs = ApiConfigCollection();
+  app->setApiConfigs(apiConfigs);
+
   app->drawMainWin();
   app->drawPromptWin();
   app->drawMainWinList();
@@ -88,14 +91,10 @@ void handlePromptSpecificKeyPress(int keyPress) {
   if (selectedPrompt == Prompt::Query) {
     switch (keyPress) {
       case KEY_UP:
-        if (app->TMPconfigs.selected <= 0) break;
-        app->TMPconfigs.selected--;
+        app->previousApiConfigItem();
         break;
       case KEY_DOWN:
-        if (app->TMPconfigs.selected + 1 >=
-            app->TMPconfigs.apiConfigurations.size())
-          break;
-        app->TMPconfigs.selected++;
+        app->nextApiConfigItem();
         break;
       case 10:  // On ENTER
         app->requestResources();

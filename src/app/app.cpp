@@ -44,10 +44,6 @@ App::App() {
   // save string of specific user input
   this->filterString = "";
   this->queryString = "";
-
-  // TODO: tmp this should be done somewhere else or differently
-  // currently like this to not create them every time
-  this->TMPconfigs = TMPcreateConfigCollection();
 }
 
 int App::getKeyPress() {
@@ -76,9 +72,9 @@ void App::drawMainWinList() {
   // On query, only show the configs and let these be selectable
   if (this->selectedPrompt == Prompt::Query) {
     int row = 0;
-    for (auto const config : this->TMPconfigs.apiConfigurations) {
+    for (auto const config : this->apiConfigs.apiConfigurations) {
       // highlight selected config
-      if (row == this->TMPconfigs.selected)
+      if (row == this->apiConfigs.selected)
         wattron(this->mainWinField, A_REVERSE);
 
       mvwprintw(this->mainWinField, row, 0, config.name.c_str());
@@ -197,6 +193,9 @@ void App::drawMainWin() {
   this->mainWinBorder =
       newwin(mainHeight - 3, mainWidth, mainStartY, mainStartX);
   box(this->mainWinBorder, 0, 0);
+
+  // TODO this sould change depending on the context
+  // did not work, because it seems like its not updated on key presses
   mvwprintw(this->mainWinBorder, 0, 1, "Repository List");
   wrefresh(this->mainWinBorder);
 
@@ -277,7 +276,7 @@ void App::requestResources() {
   try {
     std::vector<Repository> repositories = getRepoResources(
         this->userInput,
-        this->TMPconfigs.apiConfigurations[this->TMPconfigs.selected]);
+        this->apiConfigs.apiConfigurations[this->apiConfigs.selected]);
 
     if (repositories.empty()) {
       this->drawModal("Search query \"" + this->userInput +
@@ -319,4 +318,22 @@ Repository App::getSelectedRepository() {
       this->collection.resources[this->collection.selected].repository;
 
   return selectedResource;
+}
+
+void App::setApiConfigs(ApiConfigCollection configs) {
+  this->apiConfigs = configs;
+}
+
+void App::nextApiConfigItem() {
+  if (this->apiConfigs.selected + 1 >=
+      this->apiConfigs.apiConfigurations.size())
+    return;
+
+  this->apiConfigs.selected++;
+}
+
+void App::previousApiConfigItem() {
+  if (this->apiConfigs.selected <= 0) return;
+
+  this->apiConfigs.selected--;
 }
