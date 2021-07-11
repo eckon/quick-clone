@@ -194,9 +194,15 @@ void App::drawMainWin() {
       newwin(mainHeight - 3, mainWidth, mainStartY, mainStartX);
   box(this->mainWinBorder, 0, 0);
 
-  // TODO this sould change depending on the context
-  // did not work, because it seems like its not updated on key presses
-  mvwprintw(this->mainWinBorder, 0, 1, "Repository List");
+  switch (this->selectedPrompt) {
+    case Prompt::Query:
+      mvwprintw(this->mainWinBorder, 0, 1, "Git Endpoints");
+      break;
+    case Prompt::Filter:
+      mvwprintw(this->mainWinBorder, 0, 1, "Repository List");
+      break;
+  }
+
   wrefresh(this->mainWinBorder);
 
   // Input field
@@ -262,6 +268,7 @@ void App::nextPrompt() {
   }
 
   werase(this->promptWinField);
+  this->drawMainWin();
   this->drawPromptWin();
   this->typeInPrompt();
   wrefresh(this->promptWinField);
