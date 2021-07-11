@@ -19,11 +19,8 @@ ApiConfig::ApiConfig(std::string name, std::string accessToken,
 ApiConfigCollection::ApiConfigCollection() {
   std::vector<ApiConfig> configs = {};
 
-  // I need a absolute path so that I can use the app everywhere
   std::string homeDir = std::getenv("HOME");
-  // TODO: use a real path that users would realistically use (XDG_CONFIG)
-  std::ifstream file(homeDir +
-                     "/Development/private/quick-clone/variables.json");
+  std::ifstream file(homeDir + "/.config/quick-clone/config.json");
 
   auto json = nlohmann::json::parse(file);
   for (auto &el : json.items()) {
