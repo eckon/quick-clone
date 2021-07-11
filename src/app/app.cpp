@@ -241,6 +241,10 @@ void App::previousPrompt() {
 }
 
 void App::nextPrompt() {
+  bool allowedToSwitchToFilter = this->collection.resources.size() > 0;
+  if (this->selectedPrompt != Prompt::Filter && !allowedToSwitchToFilter)
+    return;
+
   switch (this->selectedPrompt) {
       // switch from query to prompt
     case Prompt::Query:
