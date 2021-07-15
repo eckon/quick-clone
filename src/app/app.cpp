@@ -212,9 +212,7 @@ void App::drawMainWin() {
 }
 
 void App::drawModal(std::string message) {
-  int yMax, xMax;
-  getmaxyx(stdscr, yMax, xMax);
-
+  int xMax = stdscr->_maxx;
   int padding = 3;
   int padded = xMax - 2 * padding;
   int modalStartX = padding;
@@ -337,7 +335,7 @@ void App::setApiConfigs(ApiConfigCollection configs) {
 
 void App::nextApiConfigItem() {
   if (this->apiConfigs.selected + 1 >=
-      this->apiConfigs.apiConfigurations.size())
+      (int)this->apiConfigs.apiConfigurations.size())
     return;
 
   this->apiConfigs.selected++;
