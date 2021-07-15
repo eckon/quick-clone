@@ -10,7 +10,6 @@ static size_t writeCallback(void *contents, size_t size, size_t nmemb,
   return size * nmemb;
 }
 
-// TODO: this or parts of it should be in the repo file
 std::vector<Repository> getRepoResources(std::string searchValue,
                                          ApiConfig config) {
   CURL *curl;

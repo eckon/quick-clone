@@ -54,7 +54,7 @@ void ResourceCollection::applyFilter(std::string filter) {
     resource.hidden = !hasSubString;
 
     if (hasSubString) {
-      // TODO: make it more general, so using filter.size will probably not work
+      // add the start/end position of the filter match for later highlight
       resource.filterMatchRanges.push_back(
           std::make_pair(position, position + filter.size() - 1));
     }
