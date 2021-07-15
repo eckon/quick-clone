@@ -22,6 +22,4 @@ class ApiConfigCollection {
   ApiConfigCollection();
 };
 
-ApiConfigCollection TMPcreateConfigCollection();
-
 #endif
