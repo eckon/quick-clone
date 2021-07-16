@@ -158,23 +158,31 @@ void App::drawPromptWin() {
       newwin(promptHeight, promptWidth, promptStartY, promptStartX);
   box(this->promptWinBorder, 0, 0);
 
-  // Add possible key options for this part (left right to select prompt)
-  mvwaddch(this->promptWinBorder, 0, 1, '(');
-  mvwaddch(this->promptWinBorder, 0, 2, ACS_LARROW);
-  mvwaddch(this->promptWinBorder, 0, 3, '/');
-  mvwaddch(this->promptWinBorder, 0, 4, ACS_RARROW);
-  mvwaddch(this->promptWinBorder, 0, 5, ')');
-
   // Add highlight to prompt title
   if (this->selectedPrompt == Prompt::Query)
     wattron(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
-  mvwprintw(this->promptWinBorder, 0, 7, "Query");
+
+  int labelPosition = 1;
+  std::string queryLabel = "Query";
+  mvwprintw(this->promptWinBorder, 0, labelPosition, queryLabel.c_str());
   wattroff(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
 
   if (this->selectedPrompt == Prompt::Filter)
     wattron(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
-  mvwprintw(this->promptWinBorder, 0, 13, "Filter");
+
+  labelPosition += queryLabel.length() + 1;
+  std::string filterLabel = "Filter";
+  mvwprintw(this->promptWinBorder, 0, labelPosition, filterLabel.c_str());
   wattroff(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
+
+  // Add possible key options for this part (left right to select prompt)
+  labelPosition += filterLabel.length() + 1;
+  int hintPosition = labelPosition;
+  mvwaddch(this->promptWinBorder, 0, hintPosition++, '(');
+  mvwaddch(this->promptWinBorder, 0, hintPosition++, ACS_LARROW);
+  mvwaddch(this->promptWinBorder, 0, hintPosition++, '/');
+  mvwaddch(this->promptWinBorder, 0, hintPosition++, ACS_RARROW);
+  mvwaddch(this->promptWinBorder, 0, hintPosition++, ')');
 
   wrefresh(this->promptWinBorder);
 
@@ -198,21 +206,26 @@ void App::drawMainWin() {
       newwin(mainHeight - 3, mainWidth, mainStartY, mainStartX);
   box(this->mainWinBorder, 0, 0);
 
-  // Add possible key options for this part (up down to select endpoint)
-  mvwaddch(this->mainWinBorder, 0, 1, '(');
-  mvwaddch(this->mainWinBorder, 0, 2, ACS_DARROW);
-  mvwaddch(this->mainWinBorder, 0, 3, '/');
-  mvwaddch(this->mainWinBorder, 0, 4, ACS_UARROW);
-  mvwaddch(this->mainWinBorder, 0, 5, ')');
-
+  std::string label;
   switch (this->selectedPrompt) {
     case Prompt::Query:
-      mvwprintw(this->mainWinBorder, 0, 7, "Git Endpoints");
+      label = "Git Endpoints";
       break;
     case Prompt::Filter:
-      mvwprintw(this->mainWinBorder, 0, 7, "Repository List");
+      label = "Repository List";
       break;
   }
+
+  int labelPosition = 1;
+  mvwprintw(this->mainWinBorder, 0, labelPosition + 1, label.c_str());
+
+  // hint for useable keys for this part
+  int hintPosition = labelPosition + label.length() + 2;
+  mvwaddch(this->mainWinBorder, 0, hintPosition++, '(');
+  mvwaddch(this->mainWinBorder, 0, hintPosition++, ACS_DARROW);
+  mvwaddch(this->mainWinBorder, 0, hintPosition++, '/');
+  mvwaddch(this->mainWinBorder, 0, hintPosition++, ACS_UARROW);
+  mvwaddch(this->mainWinBorder, 0, hintPosition++, ')');
 
   wrefresh(this->mainWinBorder);
 
