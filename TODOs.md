@@ -8,6 +8,7 @@
 - Look maybe into distributing the binary (maybe cpp has an easy way?)
 
 ## Wanted
+- Have a look into [libraries](https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/) which might abstract some things
 - Use optional or something similar to wrap non existing objects
 - Make Generic which will handle collections (for lists) and input (for data input) (with selected propterty)
   - so that i do not need to always wrap my classes in collection wrappers who just add basic things like a selection entry for the highlight position
