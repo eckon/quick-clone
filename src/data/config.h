@@ -20,6 +20,8 @@ class ApiConfigCollection {
   int selected;
 
   ApiConfigCollection();
+
+  void init();
 };
 
 #endif

@@ -8,11 +8,18 @@ int running = true;
 void handlePromptSpecificKeyPress(int keyPress);
 
 int main() {
+  ApiConfigCollection apiConfigs;
+
+  try {
+    apiConfigs.init();
+  } catch (std::string error) {
+    std::cout << error << std::endl;
+    return 1;
+  }
+
   App *app = App::getInstance();
 
-  ApiConfigCollection apiConfigs = ApiConfigCollection();
   app->setApiConfigs(apiConfigs);
-
   app->drawMainWin();
   app->drawPromptWin();
   app->drawMainWinList();

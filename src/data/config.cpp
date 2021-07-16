@@ -18,18 +18,25 @@ ApiConfig::ApiConfig(std::string name, std::string accessToken,
 
 ApiConfigCollection::ApiConfigCollection() {
   std::vector<ApiConfig> configs = {};
+  this->apiConfigurations = configs;
+  this->selected = 0;
+}
 
+void ApiConfigCollection::init() {
   std::string homeDir = std::getenv("HOME");
-  std::ifstream file(homeDir + "/.config/quick-clone/config.json");
+  std::string configDir = homeDir + "/.config/quick-clone/config.json";
+  std::ifstream file(configDir);
 
+  // user could have forgotten the config file
+  if (!file) throw std::string("Config file is missing: \"" + configDir + "\"");
+
+  // TODO this can throw different errors -> handle it in exceptions
   auto json = nlohmann::json::parse(file);
   for (auto &el : json.items()) {
     auto val = el.value();
     ApiConfig config = ApiConfig(val["name"], val["access_token"], val["url"]);
-    configs.push_back(config);
+    this->apiConfigurations.push_back(config);
   }
-  file.close();
 
-  this->apiConfigurations = configs;
-  this->selected = 0;
+  file.close();
 }
