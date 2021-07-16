@@ -158,15 +158,22 @@ void App::drawPromptWin() {
       newwin(promptHeight, promptWidth, promptStartY, promptStartX);
   box(this->promptWinBorder, 0, 0);
 
+  // Add possible key options for this part (left right to select prompt)
+  mvwaddch(this->promptWinBorder, 0, 1, '(');
+  mvwaddch(this->promptWinBorder, 0, 2, ACS_LARROW);
+  mvwaddch(this->promptWinBorder, 0, 3, '/');
+  mvwaddch(this->promptWinBorder, 0, 4, ACS_RARROW);
+  mvwaddch(this->promptWinBorder, 0, 5, ')');
+
   // Add highlight to prompt title
   if (this->selectedPrompt == Prompt::Query)
     wattron(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
-  mvwprintw(this->promptWinBorder, 0, 1, "Query");
+  mvwprintw(this->promptWinBorder, 0, 7, "Query");
   wattroff(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
 
   if (this->selectedPrompt == Prompt::Filter)
     wattron(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
-  mvwprintw(this->promptWinBorder, 0, 7, "Filter");
+  mvwprintw(this->promptWinBorder, 0, 13, "Filter");
   wattroff(this->promptWinBorder, COLOR_PAIR(COLOR_HIGHLIGHT));
 
   wrefresh(this->promptWinBorder);
@@ -191,12 +198,19 @@ void App::drawMainWin() {
       newwin(mainHeight - 3, mainWidth, mainStartY, mainStartX);
   box(this->mainWinBorder, 0, 0);
 
+  // Add possible key options for this part (up down to select endpoint)
+  mvwaddch(this->mainWinBorder, 0, 1, '(');
+  mvwaddch(this->mainWinBorder, 0, 2, ACS_DARROW);
+  mvwaddch(this->mainWinBorder, 0, 3, '/');
+  mvwaddch(this->mainWinBorder, 0, 4, ACS_UARROW);
+  mvwaddch(this->mainWinBorder, 0, 5, ')');
+
   switch (this->selectedPrompt) {
     case Prompt::Query:
-      mvwprintw(this->mainWinBorder, 0, 1, "Git Endpoints");
+      mvwprintw(this->mainWinBorder, 0, 7, "Git Endpoints");
       break;
     case Prompt::Filter:
-      mvwprintw(this->mainWinBorder, 0, 1, "Repository List");
+      mvwprintw(this->mainWinBorder, 0, 7, "Repository List");
       break;
   }
 
