@@ -1,16 +1,11 @@
 # Features
 
 ## Needed
-- Add version number
-- Add license
-- Add screenshots/gifs
-- Redo readme (and other meta data of repo) for final update
-- Look maybe into distributing the binary (maybe cpp has an easy way?)
 
 ## Wanted
 - Have a look into [libraries](https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/) which might abstract some things
 - Use optional or something similar to wrap non existing objects
-- Make Generic which will handle collections (for lists) and input (for data input) (with selected propterty)
+- Make Generic which will handle collections (for lists) and input (for data input) (with selected property)
   - so that i do not need to always wrap my classes in collection wrappers who just add basic things like a selection entry for the highlight position
 
 ## Nice to have
@@ -19,7 +14,7 @@
   - ordering amount of returned elements etc.
 - Add loading animation while waiting for curl
   - Instead of just showing the modal window
-- Add some tutorial, maybe add "Filtere here" on empty prompt etc
+- Add some tutorial, maybe add "Filter here" on empty prompt etc
   - or use the modal to show basic instructions on first open
 - Make a grid for easier window position
 - Rename different classes, methods etc. currently some have really bad names
