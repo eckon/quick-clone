@@ -6,7 +6,7 @@ A small cli tool to search and clone git repositories from the terminal (current
 
 This is a personal "for-fun" project. It was only tested on my machine and configured to my liking. It is my first "real" c++ and tui project (which is pretty obvious when looking into the code) so please consider this before doing anything.
 
-If the tool does not work and/or you want another quick solution, have a look at the [side-node](#side-note) for a bash script with most functionalities.
+If the tool does not work and/or you want another quick solution, have a look at the [side-note](#side-note) for a bash script with most functionalities.
 
 
 # Usage
