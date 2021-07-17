@@ -15,12 +15,13 @@ Run the `qc` command. This will open up the interactive TUI (the [config file](#
 
 ## Example
 
-![Example Usage of qc](./quick-clone-example.gif)
+![Example Usage of quick-clone](./quick-clone-example.gif)
 
 ## Views
 * Query-Prompt (start position)
   * Select between your different git endpoints with `UP/DOWN` (these options are taken from the config file)
   * Type in the prompt (while highlighting wanted endpoint) to request a set of repositories pre-filtered by the query
+    * On Empty search: Get newest repositories with newest Activity
   * Fire request on `ENTER`
     * Nothing found -> continue on the Query-Prompt
     * Something found, automatic switch to Filter-Prompt
