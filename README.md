@@ -1,22 +1,28 @@
 # Quick Clone
 
-A Small cli tool to search and clone git repositories from the terminal (currently only Gitlab-v4).
+A small cli tool to search and clone git repositories from the terminal (currently only Gitlab-v4 endpoints).
 
-This tool was only tested on my machine, but I am open to improve it if people are interested.
+## Disclaimer
 
-If it does not work and/or you want another quick solution, have a look at the [side-node](#side-note) for a bash script with most functionality.
+This is a personal "for-fun" project. It was only tested on my machine and configured to my liking. It is my first "real" c++ and tui project (which is pretty obvious when looking into the code) so please consider this before doing anything.
+
+If the tool does not work and/or you want another quick solution, have a look at the [side-node](#side-note) for a bash script with most functionalities.
 
 
 # Usage
 
-Run the `qc` command. This will open up the interactive TUI (The [config file](#setup) needs to be added before first usage).
+Run the `qc` command. This will open up the interactive TUI (the [config file](#setup) needs to be added before first usage).
 
-Views
+## Example
+
+![Example Usage of qc](./quick-clone-example.gif)
+
+## Views
 * Query-Prompt (start position)
-  * Select between your different git endpoints with `UP/DOWN` (these were given by the config file)
-  * Type in the prompt to request repository name from highlighted endpoint
+  * Select between your different git endpoints with `UP/DOWN` (these options are taken from the config file)
+  * Type in the prompt (while highlighting wanted endpoint) to request a set of repositories pre-filtered by the query
   * Fire request on `ENTER`
-    * Nothing found -> continue with the Query
+    * Nothing found -> continue on the Query-Prompt
     * Something found, automatic switch to Filter-Prompt
 * Filter-Prompt (`LEFT/RIGHT` let's you switch between the Prompts)
   * Select the wanted repository with `UP/DOWN`
@@ -29,7 +35,7 @@ Views
 
 * Currently there is no pre-compiled binaries
   * To install: have the needed [dependencies](#dependencies) and [compile](#commands) the tool on your machine
-* Add access token in Gitlab with (at least) Repository-read permissions
+* Add access token in Gitlab with (at least) API-read permissions
   * Can be found in your personal settings under "Access Tokens"
 * Create config file at `~/.config/quick-clone/config.json` (_names etc. might change_)
   * An array structure is used, for the purpose of having multiple Gitlab-endpoints
@@ -42,14 +48,14 @@ Example
 ```json
 [
   {
-    "name": "Work",
-    "access_token": "123",
-    "url": "https://gitlab.my-work-site.com/api/v4/projects"
+    "name": "Work Gitlab",
+    "access_token": "work-token",
+    "url": "https://git.workplace.com/api/v4/projects"
   },
   {
-    "name": "Home",
-    "access_token": "987",
-    "url": "https://gitlab.example.com/api/v4/projects"
+    "name": "Personal Gitlab",
+    "access_token": "personal-token",
+    "url": "https://gitlab.com/api/v4/projects"
   }
 ]
 ```
@@ -66,7 +72,7 @@ This should work on most machine that supports bash and the other tools and can 
 
 - ncurses e.g. `apt install libncurses5-dev libncursesw5-dev`
 - libcurl e.g. `apt install libcurl4-openssl-dev`
-- nlohmann/json e.g. `apt install nlohmann-json3-dev`
+- nlohmann/json3 e.g. `apt install nlohmann-json3-dev`
 
 
 ## Commands
