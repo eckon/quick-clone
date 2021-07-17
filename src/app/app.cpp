@@ -179,9 +179,9 @@ void App::drawPromptWin() {
   labelPosition += filterLabel.length() + 1;
   int hintPosition = labelPosition;
   mvwaddch(this->promptWinBorder, 0, hintPosition++, '(');
-  mvwaddch(this->promptWinBorder, 0, hintPosition++, ACS_LARROW);
-  mvwaddch(this->promptWinBorder, 0, hintPosition++, '/');
-  mvwaddch(this->promptWinBorder, 0, hintPosition++, ACS_RARROW);
+  mvwaddch(this->promptWinBorder, 0, hintPosition++, '<');
+  mvwaddch(this->promptWinBorder, 0, hintPosition++, '-');
+  mvwaddch(this->promptWinBorder, 0, hintPosition++, '>');
   mvwaddch(this->promptWinBorder, 0, hintPosition++, ')');
 
   wrefresh(this->promptWinBorder);
@@ -218,14 +218,6 @@ void App::drawMainWin() {
 
   int labelPosition = 1;
   mvwprintw(this->mainWinBorder, 0, labelPosition + 1, label.c_str());
-
-  // hint for useable keys for this part
-  int hintPosition = labelPosition + label.length() + 2;
-  mvwaddch(this->mainWinBorder, 0, hintPosition++, '(');
-  mvwaddch(this->mainWinBorder, 0, hintPosition++, ACS_DARROW);
-  mvwaddch(this->mainWinBorder, 0, hintPosition++, '/');
-  mvwaddch(this->mainWinBorder, 0, hintPosition++, ACS_UARROW);
-  mvwaddch(this->mainWinBorder, 0, hintPosition++, ')');
 
   wrefresh(this->mainWinBorder);
 
