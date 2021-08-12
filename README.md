@@ -18,18 +18,18 @@ Run the `qc` command. This will open up the interactive TUI (the [config file](#
 ![Example Usage of quick-clone](./quick-clone-example.gif)
 
 ## Views
-* Query-Prompt (start position)
-  * Select between your different git endpoints with `UP/DOWN` (these options are taken from the config file)
-  * Type in the prompt (while highlighting wanted endpoint) to request a set of repositories pre-filtered by the query
-    * On Empty search: Get newest repositories with newest Activity
-  * Fire request on `ENTER`
-    * Nothing found -> continue on the Query-Prompt
-    * Something found, automatic switch to Filter-Prompt
-* Filter-Prompt (`LEFT/RIGHT` let's you switch between the Prompts)
-  * Select the wanted repository with `UP/DOWN`
-  * Typing will allow basic filtering of the given list
-  * Terminate app and clone highlighted repository on `ENTER`
-  * Switch back to Query-Prompt with `LEFT/RIGHT`
+* Query-Prompt (starting position)
+  * `UP/DOWN` select between different git endpoints (provided by config file)
+  * `TYPE` in prompt to set search query (pre-filter of endpoint)
+    * Empty search: get repositories with newest activity
+  * `ENTER` send request to selected git endpoint
+    * Nothing found: continue on Query-Prompt
+    * Something found: automatic switch to Filter-Prompt
+* Filter-Prompt
+  * `UP/DOWN` select repository
+  * `TYPE` in prompt to filter search result
+  * `ENTER` clone selected repository and terminate app
+  * `LEFT/RIGHT` switch between prompts
 
 
 # Setup
@@ -39,7 +39,7 @@ Run the `qc` command. This will open up the interactive TUI (the [config file](#
 * Add access token in Gitlab with (at least) API-read permissions
   * Can be found in your personal settings under "Access Tokens"
 * Create config file at `~/.config/quick-clone/config.json` (_names etc. might change_)
-  * An array structure is used, for the purpose of having multiple Gitlab-endpoints
+  * An array structure is used, for the purpose of having multiple git endpoints
   * Every element is an objcet inside the array `[{...}, {...}, ...]` with the following
     * `name` - Will be shown in the app to identify the selected endpoint
     * `access_token` - Is needed to have access to the endpoint, needs at least read access
