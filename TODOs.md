@@ -3,6 +3,12 @@
 ## Needed
 
 ## Wanted
+- remove dependencies (mainly nlohmann/json3)
+  - only things that are really needed is ncurses for the ui and curl for http requests
+  - the return of curl can be parsed manually
+  - the config file should probably change format as well (maybe somehitng like yaml or a key value pair or env vars)
+    - so that i can remove the json3 dependency completly
+  - after that remove it from readme etc.
 - Have a look into [libraries](https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/) which might abstract some things
 - Use optional or something similar to wrap non existing objects
 - Make Generic which will handle collections (for lists) and input (for data input) (with selected property)
