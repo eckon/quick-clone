@@ -2,6 +2,7 @@
 
 A small cli tool to search and clone git repositories from the terminal (currently only Gitlab-v4 endpoints).
 
+
 ## Disclaimer
 
 This is a personal "for-fun" project. It was only tested on my machine and configured to my liking. It is my first "real" c++ and tui project (which is pretty obvious when looking into the code) so please consider this before doing anything.
@@ -13,9 +14,11 @@ If the tool does not work and/or you want another quick solution, have a look at
 
 Run the `qc` command. This will open up the interactive TUI (the [config file](#setup) needs to be added before first usage).
 
+
 ## Example
 
 ![Example Usage of quick-clone](./quick-clone-example.gif)
+
 
 ## Views
 * Query-Prompt (starting position)
@@ -33,8 +36,25 @@ Run the `qc` command. This will open up the interactive TUI (the [config file](#
 
 
 # Setup
+Currently there is no real easy way of installing this tool.
+Appimage might work (on linux) but was not tested.
+General installing and compiling should work.
 
-* Currently there is no pre-compiled binaries
+
+## Appimage
+
+* Download the Appimage
+* Make it executable `chmod +x <file>`
+  * For systems that can not run it
+  * Extract it with `./<file> --appimage-extract`
+  * Run the executable in `./squashfs-root/usr/bin/qc`
+  * **Warning**: this seems to be not working because some libs are not exported (on my system at least)
+* Run it
+
+
+## General
+
+* Currently there is no pre-compiled binaries (ignoring appimage)
   * To install: have the needed [dependencies](#dependencies) and [compile](#commands) the tool on your machine
 * Add access token in Gitlab with (at least) API-read permissions
   * Can be found in your personal settings under "Access Tokens"
@@ -77,6 +97,7 @@ This should work on most machine that supports bash and the other tools and can 
 
 
 ## Commands
+
 ```sh
 # generate Makefile in build/
 $ cmake -S . -B build/
@@ -86,4 +107,7 @@ $ make -C build/
 
 # format repository
 $ clang-format -i --style=Google src/**/*.cpp src/**/*.h
+
+# generate appimage
+$ ./generate/generate-appimage.sh
 ```
