@@ -10,7 +10,7 @@ VERSION="v0.1.0"
 export VERSION
 
 ./linuxdeploy-x86_64.AppImage \
-  -e build/bin/qc \
+  --executable build/bin/qc \
   --appdir AppDir/ \
   --desktop-file generate/qc.desktop \
   --icon-file generate/qc.svg \
