@@ -1,6 +1,8 @@
 # Features
 
 ## Needed
+- better error output in case config values are missing (currently only generic json3 error that helps with nothing)
+  - nlohmann::detail::type_error ... type must be string, but is null
 
 ## Wanted
 - remove dependencies (mainly nlohmann/json3)
