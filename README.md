@@ -48,7 +48,6 @@ General installing and compiling should work.
   * For systems that can not run it
   * Extract it with `./<file> --appimage-extract`
   * Run the executable in `./squashfs-root/usr/bin/qc`
-  * **Warning**: this seems to be not working because some libs are not exported (on my system at least)
 * Run it
 
 
