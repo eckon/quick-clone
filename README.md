@@ -100,6 +100,8 @@ This should work on most machine that supports bash and the other tools and can 
 ```sh
 # generate Makefile in build/
 $ cmake -S . -B build/
+# for older versions of cmake
+$ cd build/ && cmake .. && cd ..
 
 # compile executable (binary can be found in ./build/bin/qc)
 $ make -C build/
