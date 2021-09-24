@@ -30,12 +30,46 @@ void ApiConfigCollection::init() {
   // user could have forgotten the config file
   if (!file) throw std::string("Config file is missing: \"" + configDir + "\"");
 
-  // TODO this can throw different errors -> handle it in exceptions
+  // build array of missing config parts, to display to the user
+  std::vector<std::string> errorList;
+
+  // TODO: handle other exceptions as well
+  // this will still throw exceptions on wrong json format
   auto json = nlohmann::json::parse(file);
+  int index = 0;
+
   for (auto &el : json.items()) {
     auto val = el.value();
-    ApiConfig config = ApiConfig(val["name"], val["access_token"], val["url"]);
+
+    auto name = val["name"];
+    if (name == nlohmann::detail::value_t::null) {
+      name = "";
+      errorList.push_back(std::to_string(index) + ": name");
+    }
+
+    auto accessToken = val["access_token"];
+    if (accessToken == nlohmann::detail::value_t::null) {
+      accessToken = "";
+      errorList.push_back(std::to_string(index) + ": accessToken");
+    }
+
+    auto url = val["url"];
+    if (url == nlohmann::detail::value_t::null) {
+      url = "";
+      errorList.push_back(std::to_string(index) + ": url");
+    }
+
+    ApiConfig config = ApiConfig(name, accessToken, url);
     this->apiConfigurations.push_back(config);
+    index++;
+  }
+
+  if (errorList.size() > 0) {
+    std::string errorMessage = "Following configurations are missing, with array index:";
+    for (auto const error : errorList) {
+      errorMessage = errorMessage + "\n" + error;
+    }
+    throw errorMessage;
   }
 
   file.close();
