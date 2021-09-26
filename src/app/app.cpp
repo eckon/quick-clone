@@ -293,7 +293,7 @@ void App::requestResources() {
   if (this->userInput.empty()) {
     this->drawModal("Loading Repositories with newest Activity");
   } else {
-    this->drawModal("Loading with Respositories with query: " +
+    this->drawModal("Loading Respositories with query: " +
                     this->userInput);
   }
 
