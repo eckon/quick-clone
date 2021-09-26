@@ -1,6 +1,6 @@
 # Quick Clone
 
-![example workflow](https://github.com/eckon/quick-clone/actions/workflows/appimage.yml/badge.svg)
+[![example workflow](https://github.com/eckon/quick-clone/actions/workflows/appimage.yml/badge.svg)](https://github.com/eckon/quick-clone/actions/workflows/appimage.yml)
 
 A small cli tool to search and clone git repositories from the terminal (currently only Gitlab-v4 endpoints).
 
