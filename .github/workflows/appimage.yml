@@ -2,7 +2,7 @@ name: AppImage generation with CMake on ubuntu-18.04
 
 on:
   release:
-    types: [created, edited]
+    types: [created]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
