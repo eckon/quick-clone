@@ -6,7 +6,7 @@
 # install linuxdeploy (in this root dir for execution)
 # https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
 
-VERSION="v0.1.0"
+VERSION="v0.2.0"
 export VERSION
 
 ./linuxdeploy-x86_64.AppImage \
