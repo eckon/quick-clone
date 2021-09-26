@@ -22,6 +22,7 @@ class ApiConfigCollection {
   ApiConfigCollection();
 
   void init();
+  void generatePlaceholderConfigFile(std::string path, std::string filename);
 };
 
 #endif

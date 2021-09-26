@@ -36,16 +36,15 @@ Run the `qc` command. This will open up the interactive TUI (the [config file](#
 
 
 # Setup
-Currently there is no real easy way of installing this tool.
-Appimage might work (on linux) but was not tested.
-General installing and compiling should work.
+Either download the newest [AppImage](#appimage) (see Releases) and run it
+or [compile the repo manually](#general) and run it.
 
 
-## Appimage
+## AppImage
 
-* Download the Appimage
+* Download the Appimage on the Releases page
 * Make it executable `chmod +x <file>`
-  * For systems that can not run it
+  * For systems that can not run it (Windows: WSL)
   * Extract it with `./<file> --appimage-extract`
   * Run the executable in `./squashfs-root/usr/bin/qc`
 * Run it
@@ -53,11 +52,19 @@ General installing and compiling should work.
 
 ## General
 
-* Currently there is no pre-compiled binaries (ignoring appimage)
+* Currently there is no pre-compiled binaries (ignoring [appimage](#appimage))
   * To install: have the needed [dependencies](#dependencies) and [compile](#commands) the tool on your machine
+* On first run, the application will create (if not already existing) the following:
+  * Folders for `~/.config/quick-clone/`
+  * Config file `~/.config/quick-clone/config.json`
+  * Add example data to the config file
+    * Only the official gitlab repo works for testing the rest are just example data that will not work
+
+
+## Config
 * Add access token in Gitlab with (at least) API-read permissions
   * Can be found in your personal settings under "Access Tokens"
-* Create config file at `~/.config/quick-clone/config.json` (_names etc. might change_)
+* ~~Create/~~Update config file at `~/.config/quick-clone/config.json` (_names etc. might change_)
   * An array structure is used, for the purpose of having multiple git endpoints
   * Every element is an objcet inside the array `[{...}, {...}, ...]` with the following
     * `name` - Will be shown in the app to identify the selected endpoint
