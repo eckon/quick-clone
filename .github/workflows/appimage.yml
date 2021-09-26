@@ -1,4 +1,4 @@
-name: AppImage generation with CMake on ubuntu-18.04
+name: AppImage generation
 
 on:
   release:
