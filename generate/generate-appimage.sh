@@ -6,8 +6,9 @@
 # install linuxdeploy (in this root dir for execution)
 # https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
 
-VERSION="v0.2.0"
-export VERSION
+# this is done by the CI/CD, keeping it here for manual work
+# VERSION="vX.X.X"
+# export VERSION
 
 ./linuxdeploy-x86_64.AppImage \
   --executable build/bin/qc \

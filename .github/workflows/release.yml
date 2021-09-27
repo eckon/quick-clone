@@ -1,12 +1,53 @@
 name: Release
 on:
   push:
-    tags:
-      - v[0-9]+.[0-9]+.[0-9]+
+    branches: [ master ]
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    # allow next jo (appimage) to use parsed version number
+    outputs:
+      version_number: ${{ steps.parse_version_number.outputs.local_version_number }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Check new Release
+        run: |
+          npx semantic-release \
+            --dry-run \
+            --plugins "@semantic-release/commit-analyzer" \
+          | tee semantic-release-output
+
+      - name: Parse new Release
+        id: parse_version_number
+        run: |
+          NEW_VERSION_NUMBER=$( \
+            cat semantic-release-output \
+            | grep "The next release version is" \
+            | grep -Eo "[0-9]+\.[0-9]+\.[0-9]+" \
+            || echo "" \
+          )
+          echo NEW_VERSION_NUMBER=$NEW_VERSION_NUMBER
+          echo "::set-output name=local_version_number::$(echo $NEW_VERSION_NUMBER)"
+          echo NEW_VERSION_NUMBER=$NEW_VERSION_NUMBER >> $GITHUB_ENV
+
+      - name: Create new Release
+        if: ${{ env.NEW_VERSION_NUMBER != '' }}
+        run: |
+          npx semantic-release \
+            --plugins "@semantic-release/commit-analyzer" "@semantic-release/release-notes-generator" "@semantic-release/github"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   appimage:
+    needs: build
     runs-on: ubuntu-18.04
+    if: ${{ needs.build.outputs.version_number != '' }}
     steps:
     - uses: actions/checkout@v2
 
@@ -36,7 +77,9 @@ jobs:
 
     - name: Generate AppImage
       working-directory: ${{github.workspace}}
-      run: ./generate/generate-appimage.sh
+      run: |
+        export VERSION="v${{ needs.build.outputs.version_number }}"
+        ./generate/generate-appimage.sh
 
     - name: Upload AppImage-Artifact
       uses: actions/upload-artifact@v2

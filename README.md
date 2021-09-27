@@ -119,5 +119,6 @@ $ make -C build/
 $ clang-format -i --style=Google src/**/*.cpp src/**/*.h
 
 # generate appimage
+# when doing manual, do not forget to setup the wanted version in the script (CI/CD does it automatically)
 $ ./generate/generate-appimage.sh
 ```

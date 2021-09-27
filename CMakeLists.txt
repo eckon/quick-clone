@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(qc VERSION 0.2.0)
+project(qc)
 
 add_compile_options(-Wall -Wextra -Wpedantic)
 
