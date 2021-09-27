@@ -38,7 +38,7 @@ Run the `qc` command. This will open up the interactive TUI (the [config file](#
 
 
 # Setup
-Either download the newest [AppImage](#appimage) (see Releases) and run it
+Either download the newest [AppImage](#appimage) (see [Releases](https://github.com/eckon/quick-clone/releases)) and run it
 or [compile the repo manually](#general) and run it.
 
 
