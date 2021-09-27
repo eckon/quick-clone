@@ -66,7 +66,7 @@ or [compile the repo manually](#general) and run it.
 ## Config
 * Add access token in Gitlab with (at least) API-read permissions
   * Can be found in your personal settings under "Access Tokens"
-* ~~Create/~~Update config file at `~/.config/quick-clone/config.json` (_names etc. might change_)
+* ~~(Create)~~ Update config file at `~/.config/quick-clone/config.json` (_names etc. might change_)
   * An array structure is used, for the purpose of having multiple git endpoints
   * Every element is an objcet inside the array `[{...}, {...}, ...]` with the following
     * `name` - Will be shown in the app to identify the selected endpoint
