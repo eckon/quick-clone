@@ -124,3 +124,11 @@ $ clang-format -i --style=Google src/**/*.cpp src/**/*.h
 # when doing manual, do not forget to setup the wanted version in the script (CI/CD does it automatically)
 $ ./generate/generate-appimage.sh
 ```
+
+# Development
+
+## Git commit
+
+This project uses the standard of [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/).
+
+The commits are also being used to generate the different releases via github actions, meaning no versions need to be updated manually.
