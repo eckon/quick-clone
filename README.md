@@ -14,7 +14,7 @@ If the tool does not work and/or you want another quick solution, have a look at
 
 # Usage
 
-Run the `qc` command. This will open up the interactive TUI (the [config file](#setup) needs to be added before first usage).
+Run the `qc` command. This will open up the interactive TUI (on first run, the [basic config](#general) will be generated).
 
 
 ## Example
