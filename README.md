@@ -47,6 +47,7 @@ or [compile the repo manually](#general) and run it.
 * Download the Appimage on the Releases page
 * Make it executable `chmod +x <file>`
   * For systems that can not run it (Windows: WSL)
+    * *WARNING* for some reason only some AppImages work (for WSL), mainly the ones created manually (tagged with `*-manual`), if the newest version does not have one, check older versions/releases open an Issue or compile on your computer
   * Extract it with `./<file> --appimage-extract`
   * Run the executable in `./squashfs-root/usr/bin/qc`
 * Run it
@@ -64,6 +65,7 @@ or [compile the repo manually](#general) and run it.
 
 
 ## Config
+
 * Add access token in Gitlab with (at least) API-read permissions
   * Can be found in your personal settings under "Access Tokens"
 * ~~(Create)~~ Update config file at `~/.config/quick-clone/config.json` (_names etc. might change_)
